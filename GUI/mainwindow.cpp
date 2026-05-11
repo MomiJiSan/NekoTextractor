@@ -16,6 +16,7 @@
 #include <QFileDialog>
 #include <QFontDialog>
 #include <QHash>
+#include <QTextOption>
 
 extern const char* ATTACH;
 extern const char* LAUNCH;
@@ -633,6 +634,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
 	This = this;
 	ui.setupUi(this);
+	ui.mainSplitter->setStretchFactor(0, 0);
+	ui.mainSplitter->setStretchFactor(1, 1);
+	ui.mainSplitter->setSizes(QList<int>() << 300 << 820);
+	ui.processCombo->setMinimumContentsLength(24);
+	ui.ttCombo->setMinimumContentsLength(60);
+	ui.textOutput->setWordWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
 	extenWindow = new ExtenWindow(this);
 	for (auto [text, slot] : Array<const char*, void(&)()>{
 		{ ATTACH, AttachProcess },
@@ -649,6 +656,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	})
 	{
 		auto button = new QPushButton(text, ui.processFrame);
+		button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 		connect(button, &QPushButton::clicked, slot);
 		ui.processLayout->addWidget(button);
 	}

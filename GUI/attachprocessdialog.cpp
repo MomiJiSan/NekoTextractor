@@ -1,5 +1,6 @@
 #include "attachprocessdialog.h"
 #include <QtWinExtras/QtWin>
+#include <QAbstractItemView>
 
 extern const char* SELECT_PROCESS;
 extern const char* ATTACH_INFO;
@@ -11,6 +12,11 @@ AttachProcessDialog::AttachProcessDialog(QWidget* parent, std::vector<std::pair<
 	ui.setupUi(this);
 	setWindowTitle(SELECT_PROCESS);
 	ui.label->setText(ATTACH_INFO);
+	ui.processEdit->setPlaceholderText(QStringLiteral("Type to filter or enter a PID"));
+	ui.processList->setSelectionMode(QAbstractItemView::SingleSelection);
+	ui.processList->setUniformItemSizes(true);
+	ui.processList->setIconSize(QSize(18, 18));
+	ui.processList->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	ui.processList->setModel(&model);
 
 	QPixmap transparent(100, 100);

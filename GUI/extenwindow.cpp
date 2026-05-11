@@ -6,6 +6,7 @@
 #include <QDropEvent>
 #include <QMimeData>
 #include <QUrl>
+#include <QAbstractItemView>
 
 extern const char* EXTENSIONS;
 extern const char* ADD_EXTENSION;
@@ -137,6 +138,11 @@ ExtenWindow::ExtenWindow(QWidget* parent) : QMainWindow(parent, Qt::WindowCloseB
 	This = this;
 	ui.setupUi(this);
 	ui.vboxLayout->addWidget(new QLabel(EXTEN_WINDOW_INSTRUCTIONS, this));
+	ui.extenList->setSelectionMode(QAbstractItemView::SingleSelection);
+	ui.extenList->setAlternatingRowColors(true);
+	ui.extenList->setUniformItemSizes(true);
+	ui.extenList->setSpacing(2);
+	ui.extenList->setIconSize(QSize(18, 18));
 	setWindowTitle(EXTENSIONS);
 
 	connect(ui.extenList, &QListWidget::customContextMenuRequested, ContextMenu);
