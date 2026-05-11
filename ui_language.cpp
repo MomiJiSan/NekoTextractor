@@ -64,6 +64,9 @@ extern const char* HOOK_SEARCH_INITIALIZING;
 extern const char* HOOK_SEARCH_STARTING;
 extern const char* HOOK_SEARCH_STARTING_VIEW_CONSOLE;
 extern const char* HOOK_SEARCH_UNSTABLE_WARNING;
+extern const wchar_t* QUICK_START;
+extern const wchar_t* SELECT_PROCESS_FIRST;
+extern const wchar_t* ATTACH_SUCCESS_NEXT;
 extern const wchar_t* INJECT_FAILED;
 extern const char* INSERTING_HOOK;
 extern const wchar_t* INVALID_CODE;
@@ -183,7 +186,16 @@ namespace
 		USE_JP_LOCALE = u8"Emulate japanese locale?";
 		FAILED_TO_CREATE_CONFIG_FILE = u8"Failed to create config file \"%1\"";
 		HOOK_SEARCH_UNSTABLE_WARNING = u8"Searching for hooks is unstable! Be prepared for your game to crash!";
-		HOOK_SEARCH_STARTING_VIEW_CONSOLE = u8"Initializing hook search - please check console for further instructions";
+		HOOK_SEARCH_STARTING_VIEW_CONSOLE = u8"Hook search started. Keep advancing text in the game; results will appear when the search is ready.";
+		QUICK_START = LR"(Textractor quick start:
+1. Attach to game or Launch game.
+2. Select the text thread that contains game text.
+3. If no text appears, use Search for hooks and advance text in the game.
+4. When the correct hook works, use Save hook(s).
+
+If the game process is missing, run Textractor as administrator. For 32-bit games, use Textractor x86.)";
+		SELECT_PROCESS_FIRST = L"Textractor: attach or launch a game process first.";
+		ATTACH_SUCCESS_NEXT = L"Textractor: attached to %s. Next: select the thread with game text. If no text appears, use Search for hooks and advance text in the game.";
 		SEARCH_CJK = u8"Search for Chinese/Japanese/Korean";
 		SEARCH_PATTERN = u8"Search pattern (hex byte array)";
 		SEARCH_DURATION = u8"Search duration (ms)";
@@ -422,7 +434,16 @@ void ApplyChineseSimplified()
 	USE_JP_LOCALE = u8"模拟日本区域设置?";
 	FAILED_TO_CREATE_CONFIG_FILE = u8"无法创建配置文件 \"%1\"";
 	HOOK_SEARCH_UNSTABLE_WARNING = u8"搜索钩子的功能是不稳定的! 可能会导致你的游戏崩溃! ";
-	HOOK_SEARCH_STARTING_VIEW_CONSOLE = u8"正在初始化钩子搜索 - 请查看控制台以获取更多提示";
+	HOOK_SEARCH_STARTING_VIEW_CONSOLE = u8"钩子搜索已开始。请继续推进游戏文本；搜索就绪后会显示结果。";
+	QUICK_START = LR"(Textractor 快速开始:
+1. 点击 Attach to game 或 Launch game。
+2. 选择包含游戏文本的文本 thread。
+3. 如果没有文本，点击 Search for hooks，并在游戏里推进文本。
+4. 找到正确 hook 后，点击 Save hook(s)。
+
+如果看不到游戏进程，请用管理员权限运行 Textractor。32 位游戏请使用 Textractor x86。)";
+	SELECT_PROCESS_FIRST = L"Textractor: 请先 Attach 或 Launch 一个游戏进程。";
+	ATTACH_SUCCESS_NEXT = L"Textractor: 已附加到 %s。下一步：选择包含游戏文本的 thread；如果没有文本，使用 Search for hooks 并推进游戏文本。";
 	SEARCH_CJK = u8"搜索中文/日文/韩文";
 	SEARCH_PATTERN = u8"搜索匹配特征 (hex byte array)";
 	SEARCH_DURATION = u8"搜索持续时间 (ms)";

@@ -7,11 +7,18 @@
 class AttachProcessDialog : public QDialog
 {
 public:
-    explicit AttachProcessDialog(QWidget* parent, std::vector<std::pair<QString, HICON>> processIcons);
+    struct ProcessInfo
+    {
+        DWORD id;
+        QString fileName;
+        QString path;
+        HICON icon;
+    };
+
+    explicit AttachProcessDialog(QWidget* parent, const std::vector<ProcessInfo>& processes);
     QString SelectedProcess();
 
 private:
     Ui::AttachProcessDialog ui;
     QStandardItemModel model;
-    QString selectedProcess;
 };

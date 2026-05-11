@@ -38,6 +38,9 @@ extern const char* CODE_INFODUMP;
 extern const char* FAILED_TO_CREATE_CONFIG_FILE;
 extern const char* HOOK_SEARCH_UNSTABLE_WARNING;
 extern const char* HOOK_SEARCH_STARTING_VIEW_CONSOLE;
+extern const wchar_t* QUICK_START;
+extern const wchar_t* SELECT_PROCESS_FIRST;
+extern const wchar_t* ATTACH_SUCCESS_NEXT;
 extern const char* SEARCH_CJK;
 extern const char* SEARCH_PATTERN;
 extern const char* SEARCH_DURATION;
@@ -95,6 +98,13 @@ namespace
 	{
 		const char* labels[] = { ATTACH, LAUNCH, CONFIG, DETACH, FORGET, ADD_HOOK, REMOVE_HOOKS, SAVE_HOOKS, SEARCH_FOR_HOOKS, SETTINGS, EXTENSIONS };
 		for (size_t i = 0; i < actionButtons.size(); ++i) actionButtons[i]->setText(labels[i]);
+	}
+
+	bool EnsureSelectedProcess()
+	{
+		if (selectedProcessId) return true;
+		Host::AddConsoleOutput(SELECT_PROCESS_FIRST);
+		return false;
 	}
 
 	void FindHooks();
@@ -183,30 +193,36 @@ namespace
 
 	void AttachProcess()
 	{
-		QMultiHash<QString, DWORD> processesMap;
-		std::vector<std::pair<QString, HICON>> processIcons;
+		std::vector<AttachProcessDialog::ProcessInfo> processes;
 		for (auto [processId, processName] : GetAllProcesses())
 		{
 			if (processName && (showSystemProcesses || processName->find(L":\\Windows\\") == std::string::npos))
 			{
-				QString fileName = QFileInfo(S(processName.value())).fileName();
-				if (!processesMap.contains(fileName))
-				{
-					HICON bigIcon, smallIcon;
-					ExtractIconExW(processName->c_str(), 0, &bigIcon, &smallIcon, 1);
-					processIcons.push_back({ fileName, bigIcon ? bigIcon : smallIcon });
-				}
-				processesMap.insert(fileName, processId);
+				QString path = S(processName.value());
+				QString fileName = QFileInfo(path).fileName();
+				HICON bigIcon = nullptr, smallIcon = nullptr;
+				ExtractIconExW(processName->c_str(), 0, &bigIcon, &smallIcon, 1);
+				processes.push_back({ processId, fileName, path, bigIcon ? bigIcon : smallIcon });
 			}
 		}
-		std::sort(processIcons.begin(), processIcons.end(), [](auto one, auto two) { return QString::compare(one.first, two.first, Qt::CaseInsensitive) < 0; });
+		std::sort(processes.begin(), processes.end(), [](const auto& one, const auto& two)
+		{
+			int nameCompare = QString::compare(one.fileName, two.fileName, Qt::CaseInsensitive);
+			return nameCompare == 0 ? one.id < two.id : nameCompare < 0;
+		});
 
-		AttachProcessDialog attachProcessDialog(This, processIcons);
+		AttachProcessDialog attachProcessDialog(This, processes);
 		if (attachProcessDialog.exec())
 		{
 			QString process = attachProcessDialog.SelectedProcess();
-			if (int processId = process.toInt(nullptr, 0)) Host::InjectProcess(processId);
-			else for (int processId : processesMap.values(process)) Host::InjectProcess(processId);
+			if (DWORD processId = process.toULong(nullptr, 0)) Host::InjectProcess(processId);
+			else if (process.contains(": "))
+			{
+				if (DWORD processId = process.section(": ", 0, 0).toULong(nullptr, 0)) Host::InjectProcess(processId);
+			}
+			else for (const auto& processInfo : processes)
+				if (processInfo.fileName.compare(process, Qt::CaseInsensitive) == 0 || processInfo.path.compare(process, Qt::CaseInsensitive) == 0)
+					Host::InjectProcess(processInfo.id);
 		}
 	}
 
@@ -253,6 +269,7 @@ namespace
 
 	void ConfigureProcess()
 	{
+		if (!EnsureSelectedProcess()) return;
 		if (auto processName = GetModuleFilename(selectedProcessId)) if (int last = processName->rfind(L'\\') + 1)
 		{
 			std::wstring configFile = std::wstring(processName.value()).replace(last, std::string::npos, GAME_CONFIG_FILE);
@@ -264,6 +281,7 @@ namespace
 
 	void DetachProcess()
 	{
+		if (!EnsureSelectedProcess()) return;
 		try { Host::DetachProcess(selectedProcessId); }
 		catch (std::out_of_range) {}
 	}
@@ -272,7 +290,7 @@ namespace
 	{
 		auto processName = GetModuleFilename(selectedProcessId);
 		if (!processName) processName = UserSelectedProcess();
-		DetachProcess();
+		if (selectedProcessId) DetachProcess();
 		if (!processName) return;
 		for (auto file : { GAME_SAVE_FILE, HOOK_SAVE_FILE })
 		{
@@ -284,6 +302,7 @@ namespace
 
 	void AddHook(QString hook)
 	{
+		if (!EnsureSelectedProcess()) return;
 		if (QString hookCode = QInputDialog::getText(This, ADD_HOOK, CODE_INFODUMP, QLineEdit::Normal, hook, &ok, Qt::WindowCloseButtonHint); ok)
 			if (hookCode.startsWith("S") || hookCode.startsWith("/S")) FindHooks(); // backwards compatibility for old hook search UX
 			else if (auto hp = HookCode::Parse(S(hookCode))) try { Host::InsertHook(selectedProcessId, hp.value()); } catch (std::out_of_range) {}
@@ -297,6 +316,7 @@ namespace
 
 	void RemoveHooks()
 	{
+		if (!EnsureSelectedProcess()) return;
 		DWORD processId = selectedProcessId;
 		std::unordered_map<uint64_t, HookParam> hooks;
 		for (int i = 0; i < ui.ttCombo->count(); ++i)
@@ -324,6 +344,7 @@ namespace
 
 	void SaveHooks()
 	{
+		if (!EnsureSelectedProcess()) return;
 		auto processName = GetModuleFilename(selectedProcessId);
 		if (!processName) return;
 		QHash<uint64_t, QString> hookCodes;
@@ -344,6 +365,7 @@ namespace
 
 	void FindHooks()
 	{
+		if (!EnsureSelectedProcess()) return;
 		QMessageBox::information(This, SEARCH_FOR_HOOKS, HOOK_SEARCH_UNSTABLE_WARNING);
 
 		DWORD processId = selectedProcessId;
@@ -355,6 +377,7 @@ namespace
 		QDialog dialog(This, Qt::WindowCloseButtonHint);
 		QFormLayout layout(&dialog);
 		QCheckBox asianCheck(&dialog);
+		asianCheck.setChecked(Host::defaultCodepage == SHIFT_JIS);
 		layout.addRow(SEARCH_CJK, &asianCheck);
 		QDialogButtonBox confirm(QDialogButtonBox::Ok | QDialogButtonBox::Help | QDialogButtonBox::Retry, &dialog);
 		layout.addRow(&confirm);
@@ -575,6 +598,7 @@ namespace
 		{
 			ui.processCombo->addItem(QString::number(processId, 16).toUpper() + ": " + QFileInfo(process).fileName());
 		});
+		Host::AddConsoleOutput(FormatString(ATTACH_SUCCESS_NEXT, S(QFileInfo(process).fileName()).c_str()));
 		if (process == "???") return;
 
 		// This does add (potentially tons of) duplicates to the file, but as long as I don't perform Ω(N^2) operations it shouldn't be an issue
@@ -709,6 +733,7 @@ namespace
 	Host::Start(ProcessConnected, ProcessDisconnected, ThreadAdded, ThreadRemoved, SentenceReceived);
 	current = &Host::GetThread(Host::console);
 	Host::AddConsoleOutput(ABOUT);
+	Host::AddConsoleOutput(QUICK_START);
 
 	AttachConsole(ATTACH_PARENT_PROCESS);
 	WriteConsoleW(GetStdHandle(STD_OUTPUT_HANDLE), CL_OPTIONS, wcslen(CL_OPTIONS), DUMMY, NULL);
