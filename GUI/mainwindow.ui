@@ -27,7 +27,10 @@ QFrame#contentFrame
     border-radius: 6px;
 }
 
-QLabel[sectionLabel="true"]
+QLabel#processTitle,
+QLabel#actionsTitle,
+QLabel#threadsTitle,
+QLabel#transcriptTitle
 {
     color: #2b313d;
     font-weight: 600;
@@ -126,9 +129,6 @@ QPlainTextEdit
         </property>
         <item>
          <widget class="QLabel" name="processTitle">
-          <property name="sectionLabel">
-           <bool>true</bool>
-          </property>
           <property name="text">
            <string>Process</string>
           </property>
@@ -159,9 +159,6 @@ QPlainTextEdit
         </item>
         <item>
          <widget class="QLabel" name="actionsTitle">
-          <property name="sectionLabel">
-           <bool>true</bool>
-          </property>
           <property name="text">
            <string>Actions</string>
           </property>
@@ -194,9 +191,6 @@ QPlainTextEdit
         </property>
         <item>
          <widget class="QLabel" name="threadsTitle">
-          <property name="sectionLabel">
-           <bool>true</bool>
-          </property>
           <property name="text">
            <string>Threads</string>
           </property>
@@ -217,9 +211,6 @@ QPlainTextEdit
         </item>
         <item>
          <widget class="QLabel" name="transcriptTitle">
-          <property name="sectionLabel">
-           <bool>true</bool>
-          </property>
           <property name="text">
            <string>Transcript</string>
           </property>
