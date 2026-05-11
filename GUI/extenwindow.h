@@ -15,6 +15,7 @@ class ExtenWindow : public QMainWindow
 {
 public:
 	explicit ExtenWindow(QWidget* parent = nullptr);
+	void RefreshLanguage();
 
 private:
 	bool eventFilter(QObject* target, QEvent* event) override;

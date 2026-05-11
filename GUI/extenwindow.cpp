@@ -19,7 +19,7 @@ extern const char* EXTEN_WINDOW_INSTRUCTIONS;
 namespace
 {
 	constexpr auto EXTEN_SAVE_FILE = u8"SavedExtensions.txt";
-	constexpr auto DEFAULT_EXTENSIONS = u8"Remove Repeated Characters>Regex Filter>Copy to Clipboard>Google Translate>Extra Window>Extra Newlines";
+	constexpr auto DEFAULT_EXTENSIONS = u8"Remove Repeated Characters>Copy to Clipboard>Extra Window>Extra Newlines";
 
 	struct Extension
 	{
@@ -31,6 +31,7 @@ namespace
 	concurrency::reader_writer_lock extenMutex;
 	std::vector<Extension> extensions;
 	ExtenWindow* This = nullptr;
+	QLabel* instructionsLabel = nullptr;
 
 	bool Load(QString extenName)
 	{
@@ -137,13 +138,14 @@ ExtenWindow::ExtenWindow(QWidget* parent) : QMainWindow(parent, Qt::WindowCloseB
 {
 	This = this;
 	ui.setupUi(this);
-	ui.vboxLayout->addWidget(new QLabel(EXTEN_WINDOW_INSTRUCTIONS, this));
+	instructionsLabel = new QLabel(EXTEN_WINDOW_INSTRUCTIONS, this);
+	ui.vboxLayout->addWidget(instructionsLabel);
 	ui.extenList->setSelectionMode(QAbstractItemView::SingleSelection);
 	ui.extenList->setAlternatingRowColors(true);
 	ui.extenList->setUniformItemSizes(true);
 	ui.extenList->setSpacing(2);
 	ui.extenList->setIconSize(QSize(18, 18));
-	setWindowTitle(EXTENSIONS);
+	RefreshLanguage();
 
 	connect(ui.extenList, &QListWidget::customContextMenuRequested, ContextMenu);
 	ui.extenList->installEventFilter(this);
@@ -151,6 +153,12 @@ ExtenWindow::ExtenWindow(QWidget* parent) : QMainWindow(parent, Qt::WindowCloseB
 	if (!QFile::exists(EXTEN_SAVE_FILE)) QTextFile(EXTEN_SAVE_FILE, QIODevice::WriteOnly).write(DEFAULT_EXTENSIONS);
 	for (auto extenName : QString(QTextFile(EXTEN_SAVE_FILE, QIODevice::ReadOnly).readAll()).split(">")) Load(extenName);
 	Sync();
+}
+
+void ExtenWindow::RefreshLanguage()
+{
+	setWindowTitle(EXTENSIONS);
+	if (instructionsLabel) instructionsLabel->setText(EXTEN_WINDOW_INSTRUCTIONS);
 }
 
 bool ExtenWindow::eventFilter(QObject* target, QEvent* event)

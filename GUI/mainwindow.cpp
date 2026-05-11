@@ -66,6 +66,7 @@ extern const char* FLUSH_DELAY;
 extern const char* MAX_BUFFER_SIZE;
 extern const char* MAX_HISTORY_SIZE;
 extern const char* CONFIG_JP_LOCALE;
+extern const char* UI_LANGUAGE;
 extern const wchar_t* ABOUT;
 extern const wchar_t* CL_OPTIONS;
 extern const wchar_t* LAUNCH_FAILED;
@@ -88,6 +89,13 @@ namespace
 	wchar_t savedThreadCode[1000] = {};
 	TextThread* current = nullptr;
 	MainWindow* This = nullptr;
+	std::array<QPushButton*, 11> actionButtons{};
+
+	void RefreshActionButtons()
+	{
+		const char* labels[] = { ATTACH, LAUNCH, CONFIG, DETACH, FORGET, ADD_HOOK, REMOVE_HOOKS, SAVE_HOOKS, SEARCH_FOR_HOOKS, SETTINGS, EXTENSIONS };
+		for (size_t i = 0; i < actionButtons.size(); ++i) actionButtons[i]->setText(labels[i]);
+	}
 
 	void FindHooks();
 
@@ -522,6 +530,21 @@ namespace
 		localeCombo.setCurrentIndex(settings.value(CONFIG_JP_LOCALE, PROMPT).toInt());
 		layout.addRow(CONFIG_JP_LOCALE, &localeCombo);
 		QObject::connect(&localeCombo, qOverload<int>(&QComboBox::activated), [&settings](int i) { settings.setValue(CONFIG_JP_LOCALE, i); });
+
+		QComboBox languageCombo(&dialog);
+		for (auto language : { UiLanguage::English, UiLanguage::Turkish, UiLanguage::Spanish, UiLanguage::ChineseSimplified, UiLanguage::Russian, UiLanguage::Indonesian, UiLanguage::Italian, UiLanguage::Portuguese, UiLanguage::Thai, UiLanguage::Korean, UiLanguage::French })
+			languageCombo.addItem(UiLanguageName(language));
+		auto languageIndex = languageCombo.findText(settings.value(UI_LANGUAGE_KEY, UiLanguageName(UiLanguage::English)).toString());
+		languageCombo.setCurrentIndex(languageIndex < 0 ? 0 : languageIndex);
+		layout.addRow(UI_LANGUAGE, &languageCombo);
+		QObject::connect(&saveButton, &QPushButton::clicked, [&settings, &languageCombo]
+		{
+			UiLanguage language = UiLanguageFromName(languageCombo.currentText().toUtf8().constData());
+			settings.setValue(UI_LANGUAGE_KEY, UiLanguageName(language));
+			SetUiLanguage(language);
+			RefreshActionButtons();
+			if (extenWindow) extenWindow->RefreshLanguage();
+		});
 		layout.addWidget(&saveButton);
 		QObject::connect(&saveButton, &QPushButton::clicked, &dialog, &QDialog::accept);
 		dialog.setWindowTitle(SETTINGS);
@@ -630,22 +653,25 @@ namespace
 	}
 }
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
-{
-	This = this;
-	ui.setupUi(this);
-	ui.mainSplitter->setStretchFactor(0, 0);
-	ui.mainSplitter->setStretchFactor(1, 1);
-	ui.mainSplitter->setSizes(QList<int>() << 300 << 820);
-	ui.processCombo->setMinimumContentsLength(24);
-	ui.ttCombo->setMinimumContentsLength(60);
+	MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
+	{
+		This = this;
+		Settings settings;
+		SetUiLanguage(UiLanguageFromName(settings.value(UI_LANGUAGE_KEY, UiLanguageName(UiLanguage::English)).toString().toUtf8().constData()));
+		ui.setupUi(this);
+		ui.mainSplitter->setStretchFactor(0, 0);
+		ui.mainSplitter->setStretchFactor(1, 1);
+		ui.mainSplitter->setSizes(QList<int>() << 300 << 820);
+		ui.processCombo->setMinimumContentsLength(24);
+		ui.ttCombo->setMinimumContentsLength(60);
 	ui.textOutput->setWordWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
-	extenWindow = new ExtenWindow(this);
-	for (auto [text, slot] : Array<const char*, void(&)()>{
-		{ ATTACH, AttachProcess },
-		{ LAUNCH, LaunchProcess },
-		{ CONFIG, ConfigureProcess },
-		{ DETACH, DetachProcess },
+		extenWindow = new ExtenWindow(this);
+		int actionIndex = 0;
+		for (auto [text, slot] : Array<const char*, void(&)()>{
+			{ ATTACH, AttachProcess },
+			{ LAUNCH, LaunchProcess },
+			{ CONFIG, ConfigureProcess },
+			{ DETACH, DetachProcess },
 		{ FORGET, ForgetProcess },
 		{ ADD_HOOK, AddHook },
 		{ REMOVE_HOOKS, RemoveHooks },
@@ -654,22 +680,23 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 		{ SETTINGS, OpenSettings },
 		{ EXTENSIONS, Extensions }
 	})
-	{
-		auto button = new QPushButton(text, ui.processFrame);
-		button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-		connect(button, &QPushButton::clicked, slot);
-		ui.processLayout->addWidget(button);
-	}
-	ui.processLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));
+		{
+			auto button = new QPushButton(text, ui.processFrame);
+			button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+			connect(button, &QPushButton::clicked, slot);
+			ui.processLayout->addWidget(button);
+			actionButtons[actionIndex++] = button;
+		}
+		RefreshActionButtons();
+		ui.processLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));
 
-	connect(ui.processCombo, qOverload<int>(&QComboBox::currentIndexChanged), [] { selectedProcessId = ui.processCombo->currentText().split(":")[0].toULong(nullptr, 16); });
+		connect(ui.processCombo, qOverload<int>(&QComboBox::currentIndexChanged), [] { selectedProcessId = ui.processCombo->currentText().split(":")[0].toULong(nullptr, 16); });
 	connect(ui.ttCombo, qOverload<int>(&QComboBox::activated), this, ViewThread);
 	connect(ui.textOutput, &QPlainTextEdit::selectionChanged, this, CopyUnlessMouseDown);
 	connect(ui.textOutput, &QPlainTextEdit::customContextMenuRequested, this, OutputContextMenu);
 
-	Settings settings;
-	if (settings.contains(WINDOW) && QApplication::screenAt(settings.value(WINDOW).toRect().center())) setGeometry(settings.value(WINDOW).toRect());
-	SetOutputFont(settings.value(FONT, ui.textOutput->font().toString()).toString());
+		if (settings.contains(WINDOW) && QApplication::screenAt(settings.value(WINDOW).toRect().center())) setGeometry(settings.value(WINDOW).toRect());
+		SetOutputFont(settings.value(FONT, ui.textOutput->font().toString()).toString());
 	TextThread::filterRepetition = settings.value(FILTER_REPETITION, TextThread::filterRepetition).toBool();
 	autoAttach = settings.value(AUTO_ATTACH, autoAttach).toBool();
 	autoAttachSavedOnly = settings.value(ATTACH_SAVED_ONLY, autoAttachSavedOnly).toBool();

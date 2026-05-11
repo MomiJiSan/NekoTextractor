@@ -43,7 +43,7 @@ std::atomic<int> revCount = 0;
 class Window : public QDialog, Localizer
 {
 public:
-	Window() : QDialog(nullptr, Qt::WindowMinMaxButtonsHint)
+	Window() : QDialog(nullptr, Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint)
 	{
 		connect(&loadButton, &QPushButton::clicked, this, &Window::LoadScript);
 

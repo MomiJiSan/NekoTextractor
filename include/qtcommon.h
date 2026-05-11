@@ -20,14 +20,24 @@
 #include <QMessageBox>
 #include <QInputDialog>
 
+#include "ui_language.h"
+
 static thread_local bool ok;
 
 constexpr auto CONFIG_FILE = u8"Textractor.ini";
 constexpr auto WINDOW = u8"Window";
+constexpr auto UI_LANGUAGE_KEY = u8"UiLanguage";
 
 struct Settings : QSettings { Settings(QObject* parent = nullptr) : QSettings(CONFIG_FILE, QSettings::IniFormat, parent) {} };
 struct QTextFile : QFile { QTextFile(QString name, QIODevice::OpenMode mode) : QFile(name) { open(mode | QIODevice::Text); } };
-struct Localizer { Localizer() { Localize(); } };
+struct Localizer
+{
+	Localizer()
+	{
+		QByteArray language = Settings().value(UI_LANGUAGE_KEY, UiLanguageName(UiLanguage::English)).toString().toUtf8();
+		SetUiLanguage(UiLanguageFromName(language.constData()));
+	}
+};
 inline std::wstring S(const QString& s) { return { s.toStdWString() }; }
 inline QString S(const std::string& s) { return QString::fromStdString(s); }
 inline QString S(const std::wstring& s) { return QString::fromStdWString(s); }

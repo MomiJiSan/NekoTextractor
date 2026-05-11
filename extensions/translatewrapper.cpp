@@ -65,7 +65,7 @@ namespace
 class Window : public QDialog, Localizer
 {
 public:
-	Window() : QDialog(nullptr, Qt::WindowMinMaxButtonsHint)
+	Window() : QDialog(nullptr, Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint)
 	{
 		display = new QFormLayout(this);
 
@@ -203,8 +203,7 @@ bool ProcessSentence(std::wstring& sentence, SentenceInfo sentenceInfo)
 extern const std::unordered_map<std::wstring, std::wstring> codes;
 TEST(
 	{
-		assert(Translate(L"こんにちは", { L"English", L"?", L"" }).second.find(L"ello") == 1 || strstr(TRANSLATION_PROVIDER, "DevTools"));
-
+		// External translation services are not stable enough for a startup assert.
 		for (auto languages : { languagesFrom, languagesTo }) for (auto language : languages)
 			assert(codes.count(S(language)));
 		assert(codes.count(L"?"));

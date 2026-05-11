@@ -15,6 +15,7 @@ add_compile_options(
   /DVERSION="${VERSION}"
   /DUNICODE # config.pri
   /D_UNICODE
+  /utf-8
 )
 
 if(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
@@ -39,7 +40,7 @@ include(QtUtils)
 msvc_registry_search()
 find_qt5(Core Widgets WinExtras WebSockets)
 
-add_library(text text.cpp)
+add_library(text text.cpp ui_language.cpp)
 target_compile_definitions(text PRIVATE ${TEXT_LANGUAGE})
 link_libraries(text)
 

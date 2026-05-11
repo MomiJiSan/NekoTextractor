@@ -12,6 +12,7 @@
 #include <QGraphicsEffect>
 #include <QFontMetrics>
 #include <QMouseEvent>
+#include <QResizeEvent>
 #include <QWheelEvent>
 #include <QScrollArea>
 #include <QAbstractNativeEventFilter>
@@ -218,6 +219,29 @@ public:
 
 		ui.display->installEventFilter(this);
 		qApp->installNativeEventFilter(this);
+		closeButton = new QPushButton(QStringLiteral("X"), this);
+		closeButton->setObjectName("extraWindowCloseButton");
+		closeButton->setFixedSize(24, 24);
+		closeButton->setToolTip(QStringLiteral("Close"));
+		closeButton->setFocusPolicy(Qt::NoFocus);
+		closeButton->setCursor(Qt::ArrowCursor);
+		closeButton->setStyleSheet(
+			"QPushButton#extraWindowCloseButton {"
+			"  background: rgba(255, 255, 255, 90);"
+			"  border: none;"
+			"  color: rgba(0, 0, 0, 190);"
+			"  font: 16px Arial;"
+			"}"
+			"QPushButton#extraWindowCloseButton:hover {"
+			"  background: rgba(220, 53, 69, 210);"
+			"  color: white;"
+			"}"
+			"QPushButton#extraWindowCloseButton:pressed {"
+			"  background: rgba(180, 35, 50, 230);"
+			"}"
+		);
+		connect(closeButton, &QPushButton::clicked, this, &QWidget::hide);
+		UpdateCloseButtonGeometry();
 
 		QMetaObject::invokeMethod(this, [this]
 		{
@@ -422,8 +446,22 @@ private:
 		DisplaySentence();
 	}
 
+	void resizeEvent(QResizeEvent* event) override
+	{
+		QDialog::resizeEvent(event);
+		UpdateCloseButtonGeometry();
+	}
+
+	void UpdateCloseButtonGeometry()
+	{
+		if (!closeButton) return;
+		closeButton->move(width() - closeButton->width() - 4, 4);
+		closeButton->raise();
+	}
+
 	bool sizeLock, posLock, centeredText, autoResize, showOriginal, showOriginalAfterTranslation, useDictionary, clickThrough;
 	QPoint oldPos;
+	QPushButton* closeButton = nullptr;
 
 	class
 	{

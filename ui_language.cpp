@@ -1,252 +1,300 @@
-﻿#ifdef _WIN64
+#include "ui_language.h"
+#include <cstring>
+
+#ifdef _WIN64
 #define ARCH "x64"
 #else
 #define ARCH "x86"
 #endif
 
-#if 0
-#define TURKISH
-#define SPANISH
-#define SIMPLIFIED_CHINESE
-#define RUSSIAN
-#define INDONESIAN
-#define ITALIAN
-#define THAI
-#define PORTUGUESE
-#define KOREAN
-#define FRENCH
-#endif
+extern const char* ADD_EXTENSION;
+extern const char* ADD_HOOK;
+extern const wchar_t* ALREADY_INJECTED;
+extern const char* API_KEY;
+extern const char* ATTACH;
+extern const char* ATTACH_INFO;
+extern const char* ATTACH_SAVED_ONLY;
+extern const char* AUTO_ATTACH;
+extern const char* AUTO_RESIZE_WINDOW_HEIGHT;
+extern const char* AUTO_START;
+extern const char* BG_COLOR;
+extern const char* CENTERED_TEXT;
+extern const char* CHROME_LOCATION;
+extern const char* CLICK_THROUGH;
+extern const wchar_t* CLIPBOARD;
+extern const wchar_t* CL_OPTIONS;
+extern const char* CODEPAGE;
+extern const char* CODE_INFODUMP;
+extern const char* CONFIG;
+extern const char* CONFIG_JP_LOCALE;
+extern const char* CONFIRM_EXTENSION_OVERWRITE;
+extern const wchar_t* CONSOLE;
+extern const wchar_t* ABOUT;
+extern const char* COULD_NOT_FIND;
+extern const char* CURRENT_FILTER;
+extern const char* DEFAULT_CODEPAGE;
+extern const char* DETACH;
+extern const char* DEVTOOLS_STATUS;
+extern const char* DICTIONARY;
+extern const char* DICTIONARY_INSTRUCTIONS;
+extern const char* DOUBLE_CLICK_TO_REMOVE_HOOK;
+extern const wchar_t* ERROR_START_CHROME;
+extern const char* EXTENSIONS;
+extern const char* EXTENSION_WRITE_ERROR;
+extern const char* EXTEN_WINDOW_INSTRUCTIONS;
+extern const char* EXTRA_WINDOW_INFO;
+extern const char* FAILED_TO_CREATE_CONFIG_FILE;
+extern const char* FILTER_GARBAGE;
+extern const char* FILTER_REPETITION;
+extern const char* FLUSH_DELAY;
+extern const char* FONT;
+extern const char* FORGET;
+extern const char* FROM_COMPUTER;
+extern const char* FUNC_MISSING;
+extern const char* GARBAGE_MEMORY;
+extern const char* HEXADECIMAL;
+extern const char* HIDE_CHROME;
+extern const char* HIDE_MOUSEOVER;
+extern const char* HIJACK_ERROR;
+extern const char* HOOK_FAILED;
+extern const char* HOOK_SEARCH_FILTER;
+extern const char* HOOK_SEARCH_FINISHED;
+extern const char* HOOK_SEARCH_INITIALIZED;
+extern const char* HOOK_SEARCH_INITIALIZING;
+extern const char* HOOK_SEARCH_STARTING;
+extern const char* HOOK_SEARCH_STARTING_VIEW_CONSOLE;
+extern const char* HOOK_SEARCH_UNSTABLE_WARNING;
+extern const wchar_t* INJECT_FAILED;
+extern const char* INSERTING_HOOK;
+extern const wchar_t* INVALID_CODE;
+extern const wchar_t* INVALID_CODEPAGE;
+extern const char* INVALID_EXTENSION;
+extern const char* INVALID_REGEX;
+extern const char* LAUNCH;
+extern const wchar_t* LAUNCH_FAILED;
+extern const char* LINK;
+extern const char* LOAD_SCRIPT;
+extern const wchar_t* LUA_ERROR;
+extern const char* LUA_INTRO;
+extern const char* MAKE_GAME_PROCESS_TEXT;
+extern const char* MAX_ADDRESS;
+extern const char* MAX_BUFFER_SIZE;
+extern const char* MAX_HISTORY_SIZE;
+extern const char* MAX_HOOK_SEARCH_RECORDS;
+extern const char* MAX_SENTENCE_SIZE;
+extern const char* MAX_TRANSLATIONS_IN_TIMESPAN;
+extern const char* MIN_ADDRESS;
+extern const char* MODULE_MISSING;
+extern const char* NATIVE_LANGUAGE;
+extern const wchar_t* NEED_32_BIT;
+extern const wchar_t* NEED_64_BIT;
+extern const char* NOT_ENOUGH_TEXT;
+extern const char* OPACITY;
+extern const char* ORIGINAL_AFTER_TRANSLATION;
+extern const char* OUTLINE_COLOR;
+extern const char* OUTLINE_SIZE;
+extern const char* OUTLINE_SIZE_INFO;
+extern const char* OUT_OF_RECORDS_RETRY;
+extern const char* PATTERN_OFFSET;
+extern const char* PIPE_CONNECTED;
+extern const char* POSITION_LOCK;
+extern const char* PROCESSES;
+extern const char* RATE_LIMIT_ALL_THREADS;
+extern const char* RATE_LIMIT_SELECTED_THREAD;
+extern const char* READ_ERROR;
+extern const char* REGEX_FILTER;
+extern const wchar_t* REGEX_REPLACER_INSTRUCTIONS;
+extern const char* REMOVE_EXTENSION;
+extern const char* REMOVE_HOOKS;
+extern const char* REMOVING_HOOK;
+extern const wchar_t* REPLACER_INSTRUCTIONS;
+extern const char* SAVE_HOOKS;
+extern const char* SAVE_SEARCH_RESULTS;
+extern const char* SAVE_SETTINGS;
+extern const char* SEARCH_CJK;
+extern const char* SEARCH_DURATION;
+extern const char* SEARCH_FOR_HOOKS;
+extern const char* SEARCH_FOR_TEXT;
+extern const char* SEARCH_MODULE;
+extern const char* SEARCH_PATTERN;
+extern const char* SELECT_PROCESS;
+extern const char* SELECT_PROCESS_INFO;
+extern const char* SEND_ERROR;
+extern const wchar_t* SENTENCE_TOO_LARGE_TO_TRANS;
+extern const char* SETTINGS;
+extern const char* SHOW_ORIGINAL;
+extern const char* SHOW_ORIGINAL_INFO;
+extern const char* SHOW_SYSTEM_PROCESSES;
+extern const char* SIZE_LOCK;
+extern const char* START_DEVTOOLS;
+extern const char* START_HOOK_SEARCH;
+extern const char* STOP_DEVTOOLS;
+extern const char* STRING_OFFSET;
+extern const char* TEXT;
+extern const char* TEXT_COLOR;
+extern const char* TEXT_FILES;
+extern const char* TEXT_OUTLINE;
+extern const char* THREAD_LINKER;
+extern const char* THREAD_LINK_FROM;
+extern const char* THREAD_LINK_TO;
+extern const char* TIMESPAN;
+extern const char* TOO_MANY_HOOKS;
+extern const wchar_t* TOO_MANY_TRANS_REQUESTS;
+extern const char* TOPMOST;
+extern const char* TRANSLATE_FROM;
+extern const char* TRANSLATE_SELECTED_THREAD_ONLY;
+extern const char* TRANSLATE_TO;
+extern const wchar_t* TRANSLATION_ERROR;
+extern const char* UI_LANGUAGE;
+extern const char* UNLINK;
+extern const wchar_t* UPDATE_AVAILABLE;
+extern const char* USE_JP_LOCALE;
+extern const char* USE_PREV_SENTENCE_CONTEXT;
+extern const char* USE_TRANS_CACHE;
 
-// If you are updating a previous translation see https://github.com/Artikash/Textractor/issues/313
-
-const char* NATIVE_LANGUAGE = "English";
-const char* ATTACH = u8"Attach to game";
-const char* LAUNCH = u8"Launch game";
-const char* CONFIG = u8"Configure game";
-const char* DETACH = u8"Detach from game";
-const char* FORGET = u8"Forget game";
-const char* ADD_HOOK = u8"Add hook";
-const char* REMOVE_HOOKS = u8"Remove hook(s)";
-const char* SAVE_HOOKS = u8"Save hook(s)";
-const char* SEARCH_FOR_HOOKS = u8"Search for hooks";
-const char* SETTINGS = u8"Settings";
-const char* EXTENSIONS = u8"Extensions";
-const char* SELECT_PROCESS = u8"Select process";
-const char* ATTACH_INFO = u8R"(If you don't see the process you want to attach, try running with admin rights
-You can also type in the process ID)";
-const char* SELECT_PROCESS_INFO = u8"If you manually type in the process file name, use the absolute path";
-const char* FROM_COMPUTER = u8"Select from computer";
-const char* PROCESSES = u8"Processes (*.exe)";
-const char* CODE_INFODUMP = u8R"(Enter read code
-R{S|Q|V|M}[null_length<][codepage#]@addr
-OR
-Enter hook code
-H{A|B|W|H|S|Q|V|M}[F][null_length<][N][codepage#][padding+]data_offset[*deref_offset][:split_offset[*deref_offset]]@addr[:module[:func]]
-All numbers except codepage/null_length in hexadecimal
-Default codepage is 932 (Shift-JIS) but this can be changed in settings
-A/B: codepage char little/big endian
-W: UTF-16 char
-H: Two hex bytes
-S/Q/V/M: codepage/UTF-16/UTF-8/hex string
-F: treat strings as full lines of text
-N: don't use context
-null_length: length of null terminator used for string
-padding: length of padding data before string (C struct { int64_t size; char string[500]; } needs padding = 8)
-Negatives for data_offset/split_offset refer to registers
--4 for EAX, -8 for ECX, -C for EDX, -10 for EBX, -14 for ESP, -18 for EBP, -1C for ESI, -20 for EDI
--C for RAX, -14 for RBX, -1C for RCX, -24 for RDX, and so on for RSP, RBP, RSI, RDI, R8-R15
-* means dereference pointer+deref_offset)";
-const char* SAVE_SETTINGS = u8"Save settings";
-const char* EXTEN_WINDOW_INSTRUCTIONS = u8R"(Right click the list to add or remove extensions
-Drag and drop extensions within the list to reorder them
-(Extensions are used from top to bottom: order DOES matter))";
-const char* ADD_EXTENSION = u8"Add extension";
-const char* REMOVE_EXTENSION = u8"Remove extension";
-const char* INVALID_EXTENSION = u8"%1 is an invalid extension";
-const char* CONFIRM_EXTENSION_OVERWRITE = u8"Another version of this extension already exists, do you want to delete and overwrite it?";
-const char* EXTENSION_WRITE_ERROR = u8"Failed to save extension";
-const char* USE_JP_LOCALE = u8"Emulate japanese locale?";
-const char* FAILED_TO_CREATE_CONFIG_FILE = u8"Failed to create config file \"%1\"";
-const char* HOOK_SEARCH_UNSTABLE_WARNING = u8"Searching for hooks is unstable! Be prepared for your game to crash!";
-const char* HOOK_SEARCH_STARTING_VIEW_CONSOLE = u8"Initializing hook search - please check console for further instructions";
-const char* SEARCH_CJK = u8"Search for Chinese/Japanese/Korean";
-const char* SEARCH_PATTERN = u8"Search pattern (hex byte array)";
-const char* SEARCH_DURATION = u8"Search duration (ms)";
-const char* SEARCH_MODULE = u8"Search within module";
-const char* PATTERN_OFFSET = u8"Offset from pattern start";
-const char* MAX_HOOK_SEARCH_RECORDS = u8"Search result cap";
-const char* MIN_ADDRESS = u8"Minimum address (hex)";
-const char* MAX_ADDRESS = u8"Maximum address (hex)";
-const char* STRING_OFFSET = u8"String offset (hex)";
-const char* HOOK_SEARCH_FILTER = u8"Results must match this regex";
-const char* TEXT = u8"Text";
-const char* CODEPAGE = u8"Codepage";
-const char* SEARCH_FOR_TEXT = u8"Search for specific text";
-const char* START_HOOK_SEARCH = u8"Start hook search";
-const char* SAVE_SEARCH_RESULTS = u8"Save search results";
-const char* TEXT_FILES = u8"Text (*.txt)";
-const char* DOUBLE_CLICK_TO_REMOVE_HOOK = u8"Double click a hook to remove it";
-const char* FILTER_REPETITION = u8"Filter repetition";
-const char* AUTO_ATTACH = u8"Auto attach";
-const char* ATTACH_SAVED_ONLY = u8"Auto attach (saved only)";
-const char* SHOW_SYSTEM_PROCESSES = u8"Show system processes";
-const char* UI_LANGUAGE = u8"Language";
-const char* DEFAULT_CODEPAGE = u8"Default codepage";
-const char* FLUSH_DELAY = u8"Flush delay";
-const char* MAX_BUFFER_SIZE = u8"Max buffer size";
-const char* MAX_HISTORY_SIZE = u8"Max history size";
-const char* CONFIG_JP_LOCALE = u8"Launch with JP locale";
-const wchar_t* CONSOLE = L"Console";
-const wchar_t* CLIPBOARD = L"Clipboard";
-const wchar_t* ABOUT = L"Textractor " ARCH L" v" VERSION LR"( made by Artikash (email: akashmozumdar@gmail.com)
-Project homepage: https://github.com/Artikash/Textractor
-Tutorial video: https://github.com/Artikash/Textractor/blob/master/docs/TUTORIAL.md
-FAQ: https://github.com/Artikash/Textractor/wiki/FAQ
-Please contact Artikash with any problems, feature requests, or questions relating to Textractor
-You can do so via the project homepage (issues section) or via email
-Source code available under GPLv3 at project homepage
-If you like this project, please tell everyone about it! It's time to put AGTH down :))";
-const wchar_t* CL_OPTIONS = LR"(usage: Textractor [-p{process ID|"process name"}]...
-example: Textractor -p4466 -p"My Game.exe" tries to inject processes with ID 4466 or with name My Game.exe)";
-const wchar_t* UPDATE_AVAILABLE = L"Update available: download it from https://github.com/Artikash/Textractor/releases";
-const wchar_t* ALREADY_INJECTED = L"Textractor: already injected";
-const wchar_t* NEED_32_BIT = L"Textractor: architecture mismatch: only Textractor x86 can inject this process";
-const wchar_t* NEED_64_BIT = L"Textractor: architecture mismatch: only Textractor x64 can inject this process";
-const wchar_t* INJECT_FAILED = L"Textractor: couldn't inject";
-const wchar_t* LAUNCH_FAILED = L"Textractor: couldn't launch";
-const wchar_t* INVALID_CODE = L"Textractor: invalid code";
-const wchar_t* INVALID_CODEPAGE = L"Textractor: couldn't convert text (invalid codepage?)";
-const char* PIPE_CONNECTED = u8"Textractor: pipe connected";
-const char* INSERTING_HOOK = u8"Textractor: inserting hook: %s";
-const char* REMOVING_HOOK = u8"Textractor: removing hook: %s";
-const char* HOOK_FAILED = u8"Textractor: failed to insert hook";
-const char* TOO_MANY_HOOKS = u8"Textractor: too many hooks: can't insert";
-const char* HOOK_SEARCH_STARTING = u8"Textractor: starting hook search";
-const char* HOOK_SEARCH_INITIALIZING = u8"Textractor: initializing hook search (%f%%)";
-const char* NOT_ENOUGH_TEXT = u8"Textractor: not enough text to search accurately";
-const char* HOOK_SEARCH_INITIALIZED = u8"Textractor: initialized hook search with %zd hooks";
-const char* MAKE_GAME_PROCESS_TEXT = u8"Textractor: please click around in the game to force it to process text during the next %d seconds";
-const char* HOOK_SEARCH_FINISHED = u8"Textractor: hook search finished, %d results found";
-const char* OUT_OF_RECORDS_RETRY = u8"Textractor: out of search records, please retry if results are poor (default record count increased)";
-const char* FUNC_MISSING = u8"Textractor: function not present";
-const char* MODULE_MISSING = u8"Textractor: module not present";
-const char* GARBAGE_MEMORY = u8"Textractor: memory constantly changing, useless to read";
-const char* SEND_ERROR = u8"Textractor: Send ERROR (likely an unstable/incorrect H-code)";
-const char* READ_ERROR = u8"Textractor: Reader ERROR (likely an incorrect R-code)";
-const char* HIJACK_ERROR = u8"Textractor: Hijack ERROR";
-const char* COULD_NOT_FIND = u8"Textractor: could not find text";
-const char* TRANSLATE_TO = u8"Translate to";
-const char* TRANSLATE_FROM = u8"Translate from";
-const char* FILTER_GARBAGE = u8"Filter garbage characters";
-const char* TRANSLATE_SELECTED_THREAD_ONLY = u8"Translate selected text thread only";
-const char* RATE_LIMIT_ALL_THREADS = u8"Use rate limiter";
-const char* RATE_LIMIT_SELECTED_THREAD = u8"Rate limit selected text thread";
-const char* USE_TRANS_CACHE = u8"Use translation cache";
-const char* MAX_TRANSLATIONS_IN_TIMESPAN = u8"Max translation requests in timespan";
-const char* TIMESPAN = u8"Timespan (ms)";
-const wchar_t* SENTENCE_TOO_LARGE_TO_TRANS = L"Sentence too large to translate";
-const wchar_t* TOO_MANY_TRANS_REQUESTS = L"Rate limit exceeded: refuse to make more translation requests";
-const wchar_t* TRANSLATION_ERROR = L"Error while translating";
-const char* USE_PREV_SENTENCE_CONTEXT = u8"Use previous sentence as context";
-const char* API_KEY = u8"API key";
-const char* CHROME_LOCATION = u8"Google Chrome file location";
-const char* START_DEVTOOLS = u8"Start DevTools";
-const char* STOP_DEVTOOLS = u8"Stop DevTools";
-const char* HIDE_CHROME = u8"Hide Chrome window";
-const char* DEVTOOLS_STATUS = u8"DevTools status";
-const char* AUTO_START = u8"Start automatically";
-const wchar_t* ERROR_START_CHROME = L"failed to start Chrome or to connect to it";
-const char* EXTRA_WINDOW_INFO = u8R"(Right click to change settings
-Click and drag on window edges to move, or the bottom right corner to resize)";
-const char* MAX_SENTENCE_SIZE = u8"Max sentence size";
-const char* TOPMOST = u8"Always on top";
-const char* DICTIONARY = u8"Dictionary";
-const char* DICTIONARY_INSTRUCTIONS = u8R"(This file is used only for the "Dictionary" feature of the Extra Window extension.
-It uses a custom format specific to Textractor and is not meant to be written manually.
-You should look for a dictionary in this format online (https://github.com/Artikash/Textractor-Dictionaries/releases is a good place to start).
-Alternatively, if you're a programmer, you can write a script to convert a dictionary from another format with the info below.
-Once you have a dictionary, to look up some text in Extra Window, hover over it. You can scroll through all the matching definitions.
-Definitions are formatted like this:|TERM|Hola<<ignored|TERM|hola|TERM|Bonjour|TERM|bonjour|DEFINITION|hello|END|
-The term and definition can include rich text (https://doc.qt.io/qt-5/richtext-html-subset.html) which will be formatted properly.
-Inflections are formatted like this:|ROOT|1<<noun|INFLECTS TO|(\w*)s|NAME| plural|END|
-Textractor will check if a term matches the inflection regex and if it does, will recursively search for the root term.
-The root term is generated by replacing each number with the corresponding regex capture group (with 0 being replaced by the entire match).
-This process can easily result in infinite loops and/or stack overflows. It's your job to avoid that.
-Inflection regex uses QRegularExpression (https://doc.qt.io/qt-5/qregularexpression.html) unicode syntax.
-Textractor will display the final root term as well as all inflections used to get to that root term.
-However, the text in a term after << is ignored when displaying. This is intended to store part-of-speech information.
-This file must be encoded in UTF-8.)";
-const char* SHOW_ORIGINAL = u8"Original text";
-const char* SHOW_ORIGINAL_INFO = u8R"(Original text will not be shown
-Only works if this extension is used directly after a translation extension)";
-const char* ORIGINAL_AFTER_TRANSLATION = u8"Original text after translation";
-const char* SIZE_LOCK = u8"Size lock";
-const char* POSITION_LOCK = u8"Position lock";
-const char* CENTERED_TEXT = u8"Centered text";
-const char* AUTO_RESIZE_WINDOW_HEIGHT = u8"Auto resize window height";
-const char* CLICK_THROUGH = u8"Click through\tAlt+X";
-const char* HIDE_MOUSEOVER = u8"Hide while mouse on top";
-const char* OPACITY = u8"Opacity";
-const char* BG_COLOR = u8"Background color";
-const char* TEXT_COLOR = u8"Text color";
-const char* TEXT_OUTLINE = u8"Text outline";
-const char* OUTLINE_COLOR = u8"Outline color";
-const char* OUTLINE_SIZE = u8"Outline size";
-const char* OUTLINE_SIZE_INFO = u8"Size in pixels (recommended to stay below 20% of the font size)";
-const char* FONT = u8"Font";
-const char* LUA_INTRO = u8R"(--[[
-ProcessSentence is called each time Textractor receives a sentence of text.
-
-Param sentence: sentence received by Textractor (UTF-8).
-Param sentenceInfo: table of miscellaneous info about the sentence.
-
-If you return a string, the sentence will be turned into that string.
-If you return nil, the sentence will be unmodified.
-
-This extension uses several copies of the Lua interpreter for thread safety.
-Modifications to global variables from ProcessSentence are not guaranteed to persist.
-
-Properties in sentenceInfo:
-"current select": 0 unless sentence is in the text thread currently selected by the user.
-"process id": process ID that the sentence is coming from. 0 for console and clipboard.
-"text number": number of the current text thread. Counts up one by one as text threads are created. 0 for console, 1 for clipboard.
---]]
-function ProcessSentence(sentence, sentenceInfo)
-  --Your code here...
-end)";
-const char* LOAD_SCRIPT = u8"Load script";
-const wchar_t* LUA_ERROR = L"Lua error: %s";
-const char* REGEX_FILTER = u8"Regex Filter";
-const char* INVALID_REGEX = u8"Invalid regex";
-const char* CURRENT_FILTER = u8"Currently filtering: %1";
-const wchar_t* REPLACER_INSTRUCTIONS = LR"(This file only does anything when the "Replacer" extension is used.
-Replacement commands must be formatted like this:
-|ORIG|original_text|BECOMES|replacement_text|END|
-All text in this file outside of a replacement command is ignored.
-A caret (^) acts as a wildcard that matches any other single character.
-Whitespace in original_text is ignored, but replacement_text can contain spaces, newlines, etc.
-This file must be encoded in Unicode (UTF-16 Little Endian).)";
-const wchar_t* REGEX_REPLACER_INSTRUCTIONS = LR"(This file only does anything when the "Regex Replacer" extension is used.
-Replacement commands must be formatted like this:
-|REGEX|regular_expression|BECOMES|replacement_text|MODIFIER|modifiers|END|
-replacement_text can reference capture groups with a $ followed by their number (e.g. $1 references first capture group).
-modifiers can contain the following:
-"g" the replacement is global.
-"i" the replacement ignores the case.
-If empty the replacement is only for the first match and case sensitive.
-All text in this file outside of a replacement command is ignored.
-This file must be encoded in Unicode (UTF-16 Little Endian).
-Learn, build, & test Regular Expressions: https://regexr.com/)";
-const char* THREAD_LINKER = u8"Thread Linker";
-const char* LINK = u8"Link";
-const char* UNLINK = u8"Unlink";
-const char* THREAD_LINK_FROM = u8"Thread number to link from";
-const char* THREAD_LINK_TO = u8"Thread number to link to";
-const char* HEXADECIMAL = u8"Hexadecimal";
-
-void Localize()
+namespace
 {
-#ifdef TURKISH
+	UiLanguage currentLanguage = UiLanguage::English;
+
+	void ApplyEnglish()
+	{
+		NATIVE_LANGUAGE = "English";
+		ATTACH = u8"Attach to game";
+		LAUNCH = u8"Launch game";
+		CONFIG = u8"Configure game";
+		DETACH = u8"Detach from game";
+		FORGET = u8"Forget game";
+		ADD_HOOK = u8"Add hook";
+		REMOVE_HOOKS = u8"Remove hook(s)";
+		SAVE_HOOKS = u8"Save hook(s)";
+		SEARCH_FOR_HOOKS = u8"Search for hooks";
+		SETTINGS = u8"Settings";
+		EXTENSIONS = u8"Extensions";
+		SELECT_PROCESS = u8"Select process";
+		SELECT_PROCESS_INFO = u8"If you manually type in the process file name, use the absolute path";
+		FROM_COMPUTER = u8"Select from computer";
+		PROCESSES = u8"Processes (*.exe)";
+		SAVE_SETTINGS = u8"Save settings";
+		ADD_EXTENSION = u8"Add extension";
+		REMOVE_EXTENSION = u8"Remove extension";
+		INVALID_EXTENSION = u8"%1 is an invalid extension";
+		CONFIRM_EXTENSION_OVERWRITE = u8"Another version of this extension already exists, do you want to delete and overwrite it?";
+		EXTENSION_WRITE_ERROR = u8"Failed to save extension";
+		USE_JP_LOCALE = u8"Emulate japanese locale?";
+		FAILED_TO_CREATE_CONFIG_FILE = u8"Failed to create config file \"%1\"";
+		HOOK_SEARCH_UNSTABLE_WARNING = u8"Searching for hooks is unstable! Be prepared for your game to crash!";
+		HOOK_SEARCH_STARTING_VIEW_CONSOLE = u8"Initializing hook search - please check console for further instructions";
+		SEARCH_CJK = u8"Search for Chinese/Japanese/Korean";
+		SEARCH_PATTERN = u8"Search pattern (hex byte array)";
+		SEARCH_DURATION = u8"Search duration (ms)";
+		SEARCH_MODULE = u8"Search within module";
+		PATTERN_OFFSET = u8"Offset from pattern start";
+		MAX_HOOK_SEARCH_RECORDS = u8"Search result cap";
+		MIN_ADDRESS = u8"Minimum address (hex)";
+		MAX_ADDRESS = u8"Maximum address (hex)";
+		STRING_OFFSET = u8"String offset (hex)";
+		HOOK_SEARCH_FILTER = u8"Results must match this regex";
+		TEXT = u8"Text";
+		CODEPAGE = u8"Codepage";
+		SEARCH_FOR_TEXT = u8"Search for specific text";
+		START_HOOK_SEARCH = u8"Start hook search";
+		SAVE_SEARCH_RESULTS = u8"Save search results";
+		TEXT_FILES = u8"Text (*.txt)";
+		DOUBLE_CLICK_TO_REMOVE_HOOK = u8"Double click a hook to remove it";
+		FILTER_REPETITION = u8"Filter repetition";
+		AUTO_ATTACH = u8"Auto attach";
+		ATTACH_SAVED_ONLY = u8"Auto attach (saved only)";
+		SHOW_SYSTEM_PROCESSES = u8"Show system processes";
+		UI_LANGUAGE = u8"Language";
+		DEFAULT_CODEPAGE = u8"Default codepage";
+		FLUSH_DELAY = u8"Flush delay";
+		MAX_BUFFER_SIZE = u8"Max buffer size";
+		MAX_HISTORY_SIZE = u8"Max history size";
+		CONFIG_JP_LOCALE = u8"Launch with JP locale";
+		CONSOLE = L"Console";
+		CLIPBOARD = L"Clipboard";
+		UPDATE_AVAILABLE = L"Update available: download it from https://github.com/Artikash/Textractor/releases";
+		ALREADY_INJECTED = L"Textractor: already injected";
+		NEED_32_BIT = L"Textractor: architecture mismatch: only Textractor x86 can inject this process";
+		NEED_64_BIT = L"Textractor: architecture mismatch: only Textractor x64 can inject this process";
+		INJECT_FAILED = L"Textractor: couldn't inject";
+		LAUNCH_FAILED = L"Textractor: couldn't launch";
+		INVALID_CODE = L"Textractor: invalid code";
+		INVALID_CODEPAGE = L"Textractor: couldn't convert text (invalid codepage?)";
+		PIPE_CONNECTED = u8"Textractor: pipe connected";
+		INSERTING_HOOK = u8"Textractor: inserting hook: %s";
+		REMOVING_HOOK = u8"Textractor: removing hook: %s";
+		HOOK_FAILED = u8"Textractor: failed to insert hook";
+		TOO_MANY_HOOKS = u8"Textractor: too many hooks: can't insert";
+		HOOK_SEARCH_STARTING = u8"Textractor: starting hook search";
+		HOOK_SEARCH_INITIALIZING = u8"Textractor: initializing hook search (%f%%)";
+		NOT_ENOUGH_TEXT = u8"Textractor: not enough text to search accurately";
+		HOOK_SEARCH_INITIALIZED = u8"Textractor: initialized hook search with %zd hooks";
+		MAKE_GAME_PROCESS_TEXT = u8"Textractor: please click around in the game to force it to process text during the next %d seconds";
+		HOOK_SEARCH_FINISHED = u8"Textractor: hook search finished, %d results found";
+		OUT_OF_RECORDS_RETRY = u8"Textractor: out of search records, please retry if results are poor (default record count increased)";
+		FUNC_MISSING = u8"Textractor: function not present";
+		MODULE_MISSING = u8"Textractor: module not present";
+		GARBAGE_MEMORY = u8"Textractor: memory constantly changing, useless to read";
+		SEND_ERROR = u8"Textractor: Send ERROR (likely an unstable/incorrect H-code)";
+		READ_ERROR = u8"Textractor: Reader ERROR (likely an incorrect R-code)";
+		HIJACK_ERROR = u8"Textractor: Hijack ERROR";
+		COULD_NOT_FIND = u8"Textractor: could not find text";
+		TRANSLATE_TO = u8"Translate to";
+		TRANSLATE_FROM = u8"Translate from";
+		FILTER_GARBAGE = u8"Filter garbage characters";
+		TRANSLATE_SELECTED_THREAD_ONLY = u8"Translate selected text thread only";
+		RATE_LIMIT_ALL_THREADS = u8"Use rate limiter";
+		RATE_LIMIT_SELECTED_THREAD = u8"Rate limit selected text thread";
+		USE_TRANS_CACHE = u8"Use translation cache";
+		MAX_TRANSLATIONS_IN_TIMESPAN = u8"Max translation requests in timespan";
+		TIMESPAN = u8"Timespan (ms)";
+		SENTENCE_TOO_LARGE_TO_TRANS = L"Sentence too large to translate";
+		TOO_MANY_TRANS_REQUESTS = L"Rate limit exceeded: refuse to make more translation requests";
+		TRANSLATION_ERROR = L"Error while translating";
+		USE_PREV_SENTENCE_CONTEXT = u8"Use previous sentence as context";
+		API_KEY = u8"API key";
+		CHROME_LOCATION = u8"Google Chrome file location";
+		START_DEVTOOLS = u8"Start DevTools";
+		STOP_DEVTOOLS = u8"Stop DevTools";
+		HIDE_CHROME = u8"Hide Chrome window";
+		DEVTOOLS_STATUS = u8"DevTools status";
+		AUTO_START = u8"Start automatically";
+		ERROR_START_CHROME = L"failed to start Chrome or to connect to it";
+		MAX_SENTENCE_SIZE = u8"Max sentence size";
+		TOPMOST = u8"Always on top";
+		DICTIONARY = u8"Dictionary";
+		SHOW_ORIGINAL = u8"Original text";
+		ORIGINAL_AFTER_TRANSLATION = u8"Original text after translation";
+		SIZE_LOCK = u8"Size lock";
+		POSITION_LOCK = u8"Position lock";
+		CENTERED_TEXT = u8"Centered text";
+		AUTO_RESIZE_WINDOW_HEIGHT = u8"Auto resize window height";
+		CLICK_THROUGH = u8"Click through\tAlt+X";
+		HIDE_MOUSEOVER = u8"Hide while mouse on top";
+		OPACITY = u8"Opacity";
+		BG_COLOR = u8"Background color";
+		TEXT_COLOR = u8"Text color";
+		TEXT_OUTLINE = u8"Text outline";
+		OUTLINE_COLOR = u8"Outline color";
+		OUTLINE_SIZE = u8"Outline size";
+		OUTLINE_SIZE_INFO = u8"Size in pixels (recommended to stay below 20% of the font size)";
+		FONT = u8"Font";
+		LOAD_SCRIPT = u8"Load script";
+		LUA_ERROR = L"Lua error: %s";
+		REGEX_FILTER = u8"Regex Filter";
+		INVALID_REGEX = u8"Invalid regex";
+		CURRENT_FILTER = u8"Currently filtering: %1";
+		THREAD_LINKER = u8"Thread Linker";
+		LINK = u8"Link";
+		UNLINK = u8"Unlink";
+		THREAD_LINK_FROM = u8"Thread number to link from";
+		THREAD_LINK_TO = u8"Thread number to link to";
+		HEXADECIMAL = u8"Hexadecimal";
+	}
+
+	void ApplyTurkish()
+{
 	NATIVE_LANGUAGE = "Turkish";
 	ATTACH = u8"Oyuna bağla";
 	DETACH = u8"Oyundan kopar";
@@ -278,9 +326,10 @@ Kaynak kodu GKLv3 koruması altında proje ana sayfasında mevcut)";
 	FUNC_MISSING = u8"Textractor: Fonksiyon mevcut değil";
 	MODULE_MISSING = u8"Textractor: Modül mevcut değil";
 	GARBAGE_MEMORY = u8"Textractor: Hafıza sürekli değişiyor, okumak boşa";
-#endif // TURKISH
+}
 
-#ifdef SPANISH
+void ApplySpanish()
+{
 	NATIVE_LANGUAGE = "Spanish";
 	ATTACH = u8"Adjuntar juego";
 	LAUNCH = u8"Iniciar juego";
@@ -339,9 +388,10 @@ Clic y arrastra los bordes de la ventana para moverla, o en la esquina inferior 
 	REGEX_FILTER = u8"Filtro Regex";
 	INVALID_REGEX = u8"Regex inválido";
 	CURRENT_FILTER = u8"Actualmente filtrando: %1";
-#endif // SPANISH
+}
 
-#ifdef SIMPLIFIED_CHINESE
+void ApplyChineseSimplified()
+{
 	NATIVE_LANGUAGE = "Chinese (Simplified)";
 	ATTACH = u8"附加到游戏";
 	LAUNCH = u8"启动游戏";
@@ -529,9 +579,10 @@ i 忽略大小写差异.
 	THREAD_LINK_FROM = u8"需要链接的线程ID";
 	THREAD_LINK_TO = u8"链接到的线程ID";
 	HEXADECIMAL = u8"十六进制";
-#endif // SIMPLIFIED_CHINESE
+}
 
-#ifdef RUSSIAN
+void ApplyRussian()
+{
 	NATIVE_LANGUAGE = "Russian";
 	ATTACH = u8"Присоединить к игре";
 	LAUNCH = u8"Запустить игру";
@@ -721,9 +772,10 @@ end)";
 	LINK = u8"Связь";
 	THREAD_LINK_FROM = u8"Номер нити, от которой связывать";
 	THREAD_LINK_TO = u8"Номер нити, к которой привязывать";
-#endif // RUSSIAN
+}
 
-#ifdef INDONESIAN
+void ApplyIndonesian()
+{
 	NATIVE_LANGUAGE = "Indonesian";
 	ATTACH = u8"Tempelkan kedalam game";
 	LAUNCH = u8"Mulai game";
@@ -784,9 +836,10 @@ Klik dan tarik pinggiran jendela untuk memindahkan, atau sudut kanan bawah untuk
 	REGEX_FILTER = u8"Filter regex";
 	INVALID_REGEX = u8"Regex tidak sesuai";
 	CURRENT_FILTER = u8"Regex yang digunakan sekarang: %1";
-#endif // INDONESIAN
+}
 
-#ifdef ITALIAN
+void ApplyItalian()
+{
 	NATIVE_LANGUAGE = "Italian";
 	ATTACH = u8"Collega al gioco";
 	LAUNCH = u8"Avvia gioco";
@@ -998,9 +1051,10 @@ Apprendere, creare e testare Espressioni Regolari: https://regexr.com/)";
 	THREAD_LINK_FROM = u8"Numero di thread da cui collegarsi";
 	THREAD_LINK_TO = u8"Numero di thread a cui collegarsi";
 	HEXADECIMAL = u8"Esadecimale";
-#endif // ITALIAN
+}
 
-#ifdef PORTUGUESE
+void ApplyPortuguese()
+{
 	NATIVE_LANGUAGE = "Portuguese";
 	ATTACH = u8"Anexar ao Jogo";
 	LAUNCH = u8"Iniciar Jogo";
@@ -1084,9 +1138,10 @@ Esse arquívo deve ser codifícado em (UTF-16 little endian).)";
 	LINK = u8"Ligar";
 	THREAD_LINK_FROM = u8"Número do thread para ligar de";
 	THREAD_LINK_TO = u8"Número do thread para ligar para";
-#endif // PORTUGUESE
+}
 
-#ifdef THAI
+void ApplyThai()
+{
 	NATIVE_LANGUAGE = "Thai";
 	ATTACH = u8"เชื่อมเกม";
 	LAUNCH = u8"เริ่มเกม";
@@ -1144,9 +1199,10 @@ Source code สามารถหาได้จากส่วนของ GPLv
 	SHOW_ORIGINAL = u8"ข้อความดังเดิมก่อนแปลภาษา";
 	SIZE_LOCK = u8"ปรับให้ไม่สามารถเปลี่ยนขนาดได้";
 	FONT = u8"ฟ้อนต์";
-#endif // THAI
+}
 
-#ifdef KOREAN
+void ApplyKorean()
+{
 	NATIVE_LANGUAGE = "Korean";
 	ATTACH = u8"게임에 부착";
 	LAUNCH = u8"게임 실행";
@@ -1220,9 +1276,10 @@ Replacement commands는 아래 형식을 따라야 함:
 이 파일에서 replacement command 바깥의 텍스트는 무시됨.
 original_text의 빈공간은 무시되지만, replacement_text는 공백과 엔터등을 포함 가능.
 이 파일은 유니코드로 저장되어야만 함 (UTF-16 little endian).)";
-#endif // KOREAN
+}
 
-#ifdef FRENCH
+void ApplyFrench()
+{
 	NATIVE_LANGUAGE = "French";
 	ATTACH = u8"Attacher le jeu";
 	LAUNCH = u8"Lancer le jeu";
@@ -1413,7 +1470,68 @@ Ce fichier doit être encodé en Unicode (UTF-16 Little Endian).)";
 	THREAD_LINK_FROM = u8"Nombre du thread du lien depuis";
 	THREAD_LINK_TO = u8"Nombre du thread du lien a";
 	HEXADECIMAL = u8"Hexadécimal";
-#endif // FRENCH
-};
+}
+}
 
-static auto _ = (Localize(), 0);
+UiLanguage CurrentUiLanguage()
+{
+	return currentLanguage;
+}
+
+const char* UiLanguageName(UiLanguage language)
+{
+	switch (language)
+	{
+	case UiLanguage::English: return "English";
+	case UiLanguage::Turkish: return "Turkish";
+	case UiLanguage::Spanish: return "Spanish";
+	case UiLanguage::ChineseSimplified: return "Chinese (Simplified)";
+	case UiLanguage::Russian: return "Russian";
+	case UiLanguage::Indonesian: return "Indonesian";
+	case UiLanguage::Italian: return "Italian";
+	case UiLanguage::Portuguese: return "Portuguese";
+	case UiLanguage::Thai: return "Thai";
+	case UiLanguage::Korean: return "Korean";
+	case UiLanguage::French: return "French";
+	default: return "English";
+	}
+}
+
+UiLanguage UiLanguageFromName(const char* name)
+{
+	if (!name) return UiLanguage::English;
+	if (strcmp(name, "English") == 0) return UiLanguage::English;
+	if (strcmp(name, "Turkish") == 0) return UiLanguage::Turkish;
+	if (strcmp(name, "Spanish") == 0) return UiLanguage::Spanish;
+	if (strcmp(name, "Chinese (Simplified)") == 0) return UiLanguage::ChineseSimplified;
+	if (strcmp(name, "Russian") == 0) return UiLanguage::Russian;
+	if (strcmp(name, "Indonesian") == 0) return UiLanguage::Indonesian;
+	if (strcmp(name, "Italian") == 0) return UiLanguage::Italian;
+	if (strcmp(name, "Portuguese") == 0) return UiLanguage::Portuguese;
+	if (strcmp(name, "Thai") == 0) return UiLanguage::Thai;
+	if (strcmp(name, "Korean") == 0) return UiLanguage::Korean;
+	if (strcmp(name, "French") == 0) return UiLanguage::French;
+	return UiLanguage::English;
+}
+
+void SetUiLanguage(UiLanguage language)
+{
+	currentLanguage = language;
+	ApplyEnglish();
+	switch (language)
+	{
+	case UiLanguage::Turkish: ApplyTurkish(); break;
+	case UiLanguage::Spanish: ApplySpanish(); break;
+	case UiLanguage::ChineseSimplified: ApplyChineseSimplified(); break;
+	case UiLanguage::Russian: ApplyRussian(); break;
+	case UiLanguage::Indonesian: ApplyIndonesian(); break;
+	case UiLanguage::Italian: ApplyItalian(); break;
+	case UiLanguage::Portuguese: ApplyPortuguese(); break;
+	case UiLanguage::Thai: ApplyThai(); break;
+	case UiLanguage::Korean: ApplyKorean(); break;
+	case UiLanguage::French: ApplyFrench(); break;
+	default: break;
+	}
+}
+
+#undef ARCH
