@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(Textractor)
+project(NekoTextractor)
 
 if (NOT MSVC)
 	message(FATAL_ERROR "Textractor can only be built with Visual Studio")
