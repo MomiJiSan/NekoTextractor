@@ -164,4 +164,9 @@ void RemoveHook(uint64_t addr, int maxOffset)
 	for (auto& hook : *hooks) if (abs((long long)(hook.address - addr)) <= maxOffset) return hook.Clear();
 }
 
+void RemoveHooksByType(DWORD type)
+{
+	for (auto& hook : *hooks) if (hook.address && (hook.hp.type & type)) hook.Clear();
+}
+
 // EOF

@@ -12,6 +12,7 @@ void NotifyHookFound(HookParam hp, wchar_t* text);
 void NotifyHookRemove(uint64_t addr, LPCSTR name);
 void NewHook(HookParam hp, LPCSTR name, DWORD flag = HOOK_ENGINE);
 void RemoveHook(uint64_t addr, int maxOffset = 9);
+void RemoveHooksByType(DWORD type);
 
 inline SearchParam spDefault;
 

@@ -88,6 +88,7 @@ namespace
 	std::unordered_set<DWORD> alreadyAttached;
 	bool autoAttach = false, autoAttachSavedOnly = true;
 	bool showSystemProcesses = false;
+	bool userSelectedThread = false;
 	uint64_t savedThreadCtx = 0, savedThreadCtx2 = 0;
 	wchar_t savedThreadCode[1000] = {};
 	TextThread* current = nullptr;
@@ -189,6 +190,30 @@ namespace
 		ui.ttCombo->setCurrentIndex(index);
 		ui.textOutput->setPlainText(sanitize(S((current = &Host::GetThread(ParseTextThreadString(ui.ttCombo->itemText(index))))->storage->c_str())));
 		ui.textOutput->moveCursor(QTextCursor::End);
+	}
+
+	bool IsPassiveThread(TextThread* thread)
+	{
+		return thread && (thread->tp == Host::console || thread->tp == Host::clipboard);
+	}
+
+	bool LooksLikeKiriKiriBody(TextThread& thread, const std::wstring& sentence)
+	{
+		if (thread.name != L"KiriKiriZ") return false;
+		auto text = sentence;
+		Trim(text);
+		if (text.size() < 4 || (text.front() == L'【' && text.back() == L'】')) return false;
+		return text.find_first_of(L"「『（(") != std::wstring::npos || text.size() >= 12;
+	}
+
+	void AutoViewThread(TextThread& thread)
+	{
+		current = &thread;
+		QMetaObject::invokeMethod(This, [ttString = TextThreadString(thread)]
+		{
+			int threadIndex = ui.ttCombo->findText(ttString, Qt::MatchStartsWith);
+			if (threadIndex >= 0) ViewThread(threadIndex);
+		});
 	}
 
 	void AttachProcess()
@@ -592,6 +617,7 @@ namespace
 	void ProcessConnected(DWORD processId)
 	{
 		alreadyAttached.insert(processId);
+		if (IsPassiveThread(current)) userSelectedThread = false;
 
 		QString process = S(GetModuleFilename(processId).value_or(L"???"));
 		QMetaObject::invokeMethod(This, [process, processId]
@@ -638,18 +664,24 @@ namespace
 
 	void ThreadRemoved(TextThread& thread)
 	{
-		QMetaObject::invokeMethod(This, [ttString = TextThreadString(thread)]
+		bool removingCurrent = &thread == current;
+		QMetaObject::invokeMethod(This, [removingCurrent, ttString = TextThreadString(thread)]
 		{
 			int threadIndex = ui.ttCombo->findText(ttString, Qt::MatchStartsWith);
-			if (threadIndex == ui.ttCombo->currentIndex())	ViewThread(0);
-			ui.ttCombo->removeItem(threadIndex);
+			if (removingCurrent || threadIndex == ui.ttCombo->currentIndex())
+			{
+				userSelectedThread = false;
+				ViewThread(0);
+			}
+			if (threadIndex >= 0) ui.ttCombo->removeItem(threadIndex);
 		}, Qt::BlockingQueuedConnection);
 	}
 
 	bool SentenceReceived(TextThread& thread, std::wstring& sentence)
 	{
-		for (int i = 0; i < sentence.size(); ++i) if (sentence[i] == '\r' && sentence[i + 1] == '\n') sentence[i] = 0x200b; // for some reason \r appears as newline - no need to double
+		for (int i = 0; i + 1 < sentence.size(); ++i) if (sentence[i] == '\r' && sentence[i + 1] == '\n') sentence[i] = 0x200b; // for some reason \r appears as newline - no need to double
 		if (!DispatchSentenceToExtensions(sentence, GetSentenceInfo(thread).data())) return false;
+		if (!userSelectedThread && IsPassiveThread(current) && LooksLikeKiriKiriBody(thread, sentence)) AutoViewThread(thread);
 		sentence += L'\n';
 		if (&thread == current) QMetaObject::invokeMethod(This, [sentence = S(sentence)]() mutable
 		{
@@ -715,7 +747,7 @@ namespace
 		ui.processLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));
 
 		connect(ui.processCombo, qOverload<int>(&QComboBox::currentIndexChanged), [] { selectedProcessId = ui.processCombo->currentText().split(":")[0].toULong(nullptr, 16); });
-	connect(ui.ttCombo, qOverload<int>(&QComboBox::activated), this, ViewThread);
+	connect(ui.ttCombo, qOverload<int>(&QComboBox::activated), this, [](int index) { ViewThread(index); userSelectedThread = !IsPassiveThread(current); });
 	connect(ui.textOutput, &QPlainTextEdit::selectionChanged, this, CopyUnlessMouseDown);
 	connect(ui.textOutput, &QPlainTextEdit::customContextMenuRequested, this, OutputContextMenu);
 

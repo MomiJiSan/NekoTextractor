@@ -60,6 +60,12 @@ enum { VNR_TEXT_CAPACITY = 1500 }; // estimated max number of bytes allowed in V
 
 namespace { // unnamed helpers
 
+	void DisableAdditionalHooks(const char* message)
+	{
+		ConsoleOutput(message);
+		RemoveHooksByType(HOOK_ADDITIONAL);
+	}
+
 	template <void* funcA, void* funcW, int depth = 100>
 	bool StackSearchingTrigger(LPVOID funcAddr, DWORD, DWORD stack)
 	{
@@ -589,9 +595,8 @@ bool InsertKiriKiriHook() // 9/20/2014 jichi: change return type to bool
   bool k1 = FindKiriKiriHook((DWORD)GetGlyphOutlineW,      processStopAddress - processStartAddress, processStartAddress, 0), // KiriKiri1
        k2 = FindKiriKiriHook((DWORD)GetTextExtentPoint32W, processStopAddress - processStartAddress, processStartAddress, 1); // KiriKiri2
   //RegisterEngineType(ENGINE_KIRIKIRI);
-  if (k1 && k2) {
-    ConsoleOutput("vnreng:KiriKiri1: disable GDI hooks");
-    
+  if (k1 || k2) {
+    DisableAdditionalHooks("vnreng:KiriKiri1: disable GDI hooks");
   }
   return k1 || k2;
 }
@@ -1368,8 +1373,7 @@ void NewKiriKiriZHook(DWORD addr)
   ConsoleOutput("vnreng: INSERT KiriKiriZ");
   NewHook(hp, "KiriKiriZ");
 
-  ConsoleOutput("vnreng:KiriKiriZ: disable GDI hooks");
-  
+  DisableAdditionalHooks("vnreng:KiriKiriZ: disable GDI hooks");
 }
 
 bool KiriKiriZHook1(DWORD esp_base, HookParam *)
@@ -2052,8 +2056,8 @@ bool InsertBGI2Hook()
   NewHook(hp, "BGI2");
 
   // Disable TextOutA, which is cached and hence missing characters.
-  ConsoleOutput("vnreng:BGI2: disable GDI hooks");
-  
+  DisableAdditionalHooks("vnreng:BGI2: disable GDI hooks");
+
   return true;
 }
 
@@ -2232,8 +2236,8 @@ static bool InsertRealliveDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
         //GROWL_DWORD(hp.address);
         NewHook(hp, "RealLive");
         //RegisterEngineType(ENGINE_REALLIVE);
-        ConsoleOutput("vnreng:RealLive: disable GDI hooks");
-        
+        DisableAdditionalHooks("vnreng:RealLive: disable GDI hooks");
+
         return true;
       }
   }
@@ -2353,8 +2357,8 @@ bool InsertSiglus3Hook()
   ConsoleOutput("vnreng: INSERT Siglus3");
   NewHook(hp, "SiglusEngine3");
 
-  ConsoleOutput("vnreng:Siglus3: disable GDI hooks");
-  
+  DisableAdditionalHooks("vnreng:Siglus3: disable GDI hooks");
+
   return true;
 }
 
@@ -2504,8 +2508,8 @@ bool InsertSiglus4Hook()
   ConsoleOutput("vnreng: INSERT Siglus4");
   NewHook(hp, "SiglusEngine4");
 
-  ConsoleOutput("vnreng:Siglus4: disable GDI hooks");
-  
+  DisableAdditionalHooks("vnreng:Siglus4: disable GDI hooks");
+
   return true;
 }
 
@@ -2694,8 +2698,8 @@ bool InsertSiglus4Hook()
   ConsoleOutput("vnreng: INSERT Siglus4");
   NewHook(hp, "SiglusEngine4");
 
-  ConsoleOutput("vnreng:Siglus4: disable GDI hooks");
-  
+  DisableAdditionalHooks("vnreng:Siglus4: disable GDI hooks");
+
   return true;
 }
 #endif // 0
@@ -4786,8 +4790,8 @@ static bool InsertSystem43OldHook(ULONG startAddress, ULONG stopAddress, LPCSTR 
   ConsoleOutput("vnreng: INSERT System43");
   NewHook(hp, hookName);
 
-  ConsoleOutput("vnreng:System43: disable GDI hooks"); // disable hooking to TextOutA, which is cached
-  
+  DisableAdditionalHooks("vnreng:System43: disable GDI hooks"); // disable hooking to TextOutA, which is cached
+
   return true;
 }
 
@@ -5524,8 +5528,8 @@ static bool InsertSystem43NewHook(ULONG startAddress, ULONG stopAddress, LPCSTR 
   ConsoleOutput("vnreng: INSERT System43+");
   NewHook(hp, hookName);
 
-  ConsoleOutput("vnreng:System43+: disable GDI hooks"); // disable hooking to TextOutA, which is cached
-  
+  DisableAdditionalHooks("vnreng:System43+: disable GDI hooks"); // disable hooking to TextOutA, which is cached
+
   return true;
 }
 
@@ -6942,8 +6946,8 @@ bool InsertMalieHook2() // jichi 8/20/2013: Change return type to boolean
   ConsoleOutput("vnreng: INSERT MalieHook2");
   NewHook(hp, "Malie");
   //RegisterEngineType(ENGINE_MALIE);
-  ConsoleOutput("vnreng:Malie2: disable GDI hooks");
-  
+  DisableAdditionalHooks("vnreng:Malie2: disable GDI hooks");
+
   return true;
 }
 
@@ -7271,8 +7275,8 @@ bool InsertMalie3Hook()
   //hp.filter_fun = Malie3Filter;
   ConsoleOutput("vnreng: INSERT Malie3");
   NewHook(hp, "Malie3");
-  ConsoleOutput("vnreng:Malie3: disable GDI hooks");
-  
+  DisableAdditionalHooks("vnreng:Malie3: disable GDI hooks");
+
   return true;
 }
 
@@ -8405,8 +8409,8 @@ bool InsertApricoTHook()
           NewHook(hp, "ApRicoT");
           //RegisterEngineType(ENGINE_APRICOT);
           // jichi 2/14/2015: disable cached GDI functions
-          ConsoleOutput("vnreng:ApRicoT: disable GDI hooks");
-          
+          DisableAdditionalHooks("vnreng:ApRicoT: disable GDI hooks");
+
           return true;
         }
 
@@ -8766,8 +8770,8 @@ bool InsertSystemAoiDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
           NewHook(hp, "SystemAoi2"); // jichi 2/12/2015
         else
           NewHook(hp, "SystemAoi"); // jichi 7/8/2014: renamed, see: ja.wikipedia.org/wiki/ソフトハウスキャラ
-        ConsoleOutput("vnreng:SystemAoi: disable GDI hooks");
-        
+        DisableAdditionalHooks("vnreng:SystemAoi: disable GDI hooks");
+
       } else
         ConsoleOutput("vnreng: failed to detect SystemAoi");
       //RegisterEngineType(ENGINE_SOFTHOUSE);
@@ -8820,8 +8824,8 @@ bool InsertSystemAoiStatic(HMODULE hModule, bool wideChar) // attach scenario
     NewHook(hp, "SystemAoiW");
   else
     NewHook(hp, "SystemAoiA");
-  ConsoleOutput("vnreng:SystemAoiStatic: disable GDI hooks");
-  
+  DisableAdditionalHooks("vnreng:SystemAoiStatic: disable GDI hooks");
+
   return true;
 }
 } // unnamed namespace
@@ -10000,8 +10004,8 @@ static bool InsertGXP1Hook()
 
             // jichi 5/13/2015: Disable hooking to GetGlyphOutlineW
             // FIXME: GetGlyphOutlineW can extract name, but GXP cannot
-            ConsoleOutput("vnreng:GXP: disable GDI hooks");
-            
+            DisableAdditionalHooks("vnreng:GXP: disable GDI hooks");
+
             return true;
           }
         }
@@ -10036,8 +10040,8 @@ static bool InsertGXP2Hook()
   hp.length_offset = 1;
   ConsoleOutput("vnreng: INSERT GXP2");
   NewHook(hp, "GXP2");
-  ConsoleOutput("vnreng:GXP: disable GDI hooks");
-  
+  DisableAdditionalHooks("vnreng:GXP: disable GDI hooks");
+
   return true;
 }
 
@@ -13857,8 +13861,8 @@ bool InsertExpHook()
   ConsoleOutput("vnreng: INSERT EXP");
   NewHook(hp, "EXP"); // FIXME: text displayed line by line
 
-  ConsoleOutput("vnreng:EXP: disable GDI hooks"); // There are no GDI functions hooked though
-  
+  DisableAdditionalHooks("vnreng:EXP: disable GDI hooks"); // There are no GDI functions hooked though
+
   return true;
 }
 
@@ -14594,8 +14598,8 @@ static bool InsertMinkDynamicHook(LPVOID fun, DWORD frame, DWORD stack)
   hp.type = BIG_ENDIAN;
   NewHook(hp, "Mink");
 
-  ConsoleOutput("vnreng:Mink: disable GDI hooks");
-  
+  DisableAdditionalHooks("vnreng:Mink: disable GDI hooks");
+
   return true;
 }
 #endif // 0
@@ -15631,8 +15635,8 @@ bool InsertSyuntadaHook()
   NewHook(hp, "Syuntada");
 
   // TextOutA will produce repeated texts
-  ConsoleOutput("vnreng:Syuntada: disable GDI hooks");
-  
+  DisableAdditionalHooks("vnreng:Syuntada: disable GDI hooks");
+
   return true;
 }
 
@@ -15844,8 +15848,8 @@ bool InsertBootupGDIHook()
   ConsoleOutput("vnreng: INSERT BootupGDI");
   NewHook(hp, widechar ? "BootupW" : "BootupA");
 
-  ConsoleOutput("vnreng:BootupGDI: disable GDI hooks");
-  
+  DisableAdditionalHooks("vnreng:BootupGDI: disable GDI hooks");
+
   return true;
 }
 bool InsertBootupLstrHook() // for character name
@@ -16930,8 +16934,8 @@ bool InsertAdobeFlash10Hook()
   ConsoleOutput("vnreng: INSERT Adobe Flash 10");
   NewHook(hp, "Adobe Flash 10");
 
-  ConsoleOutput("vnreng:AdobeFlash10: disable GDI hooks");
-  
+  DisableAdditionalHooks("vnreng:AdobeFlash10: disable GDI hooks");
+
   return true;
 }
 

@@ -5,7 +5,7 @@ bool ProcessSentence(std::wstring& sentence, SentenceInfo sentenceInfo)
 	if (sentenceInfo["text number"] == 0) return false;
 
 	std::vector<int> repeatNumbers(sentence.size() + 1, 0);
-	for (int i = 0; i < sentence.size(); ++i)
+	for (int i = 0; i + 1 < sentence.size(); ++i)
 	{
 		if (sentence[i] != sentence[i + 1])
 		{
