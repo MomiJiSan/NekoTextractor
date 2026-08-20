@@ -22,7 +22,8 @@ namespace
 	constexpr auto EXTEN_SAVE_FILE = u8"SavedExtensions.txt";
 	constexpr auto LEGACY_DEFAULT_EXTENSIONS = u8"Remove Repeated Characters>Copy to Clipboard>Extra Window>Extra Newlines";
 	constexpr auto PHRASE2_DEFAULT_EXTENSIONS = u8"Remove Repeated Characters>Remove Repeated Phrases 2>Copy to Clipboard>Extra Window>Extra Newlines";
-	constexpr auto DEFAULT_EXTENSIONS = u8"Remove Repeated Characters>Remove KiriKiri Repeats>Copy to Clipboard>Extra Window>Extra Newlines";
+	constexpr auto KIRIKIRI_DEFAULT_EXTENSIONS = u8"Remove Repeated Characters>Remove KiriKiri Repeats>Copy to Clipboard>Extra Window>Extra Newlines";
+	constexpr auto DEFAULT_EXTENSIONS = u8"Remove Repeated Characters>Remove KiriKiri Repeats>Remove Unity Repeats>Copy to Clipboard>Extra Window>Extra Newlines";
 
 	struct Extension
 	{
@@ -158,7 +159,8 @@ ExtenWindow::ExtenWindow(QWidget* parent) : QMainWindow(parent, Qt::WindowCloseB
 	{
 		auto savedExtensions = QTextFile(EXTEN_SAVE_FILE, QIODevice::ReadOnly).readAll();
 		if (savedExtensions == LEGACY_DEFAULT_EXTENSIONS || savedExtensions == QByteArray(LEGACY_DEFAULT_EXTENSIONS) + ">" ||
-			savedExtensions == PHRASE2_DEFAULT_EXTENSIONS || savedExtensions == QByteArray(PHRASE2_DEFAULT_EXTENSIONS) + ">")
+			savedExtensions == PHRASE2_DEFAULT_EXTENSIONS || savedExtensions == QByteArray(PHRASE2_DEFAULT_EXTENSIONS) + ">" ||
+			savedExtensions == KIRIKIRI_DEFAULT_EXTENSIONS || savedExtensions == QByteArray(KIRIKIRI_DEFAULT_EXTENSIONS) + ">")
 			QTextFile(EXTEN_SAVE_FILE, QIODevice::WriteOnly | QIODevice::Truncate).write(DEFAULT_EXTENSIONS);
 	}
 	for (auto extenName : QString(QTextFile(EXTEN_SAVE_FILE, QIODevice::ReadOnly).readAll()).split(">")) Load(extenName);

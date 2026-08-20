@@ -127,6 +127,62 @@ namespace
 		return { threadParam[1].toUInt(nullptr, 16), threadParam[2].toULongLong(nullptr, 16), threadParam[3].toULongLong(nullptr, 16), threadParam[4].toULongLong(nullptr, 16) };
 	}
 
+	bool IsSingleCharacterSpam(const QString& text)
+	{
+		QChar repeated;
+		int count = 0;
+		for (auto ch : text)
+		{
+			if (ch.isSpace()) continue;
+			if (!count) repeated = ch;
+			else if (ch != repeated) return false;
+			++count;
+		}
+		return count >= 12;
+	}
+
+	int UnitySearchScore(const QString& text)
+	{
+		if (text.contains(":/") || text.contains(":\\") || text.contains("_Data") || text.contains(".dll", Qt::CaseInsensitive)) return -1;
+		for (auto bad : { "InputSystem", "BurstCompiler", "CompileAsync", "UnityEngine", "System.Collections" })
+			if (text.contains(bad, Qt::CaseInsensitive)) return -1;
+		if (IsSingleCharacterSpam(text)) return -1;
+
+		int cjk = 0, ascii = 0, letters = 0, spaces = 0, bad = 0, privateUse = 0;
+		for (auto ch : text)
+		{
+			ushort u = ch.unicode();
+			if (u >= 0x4e00 && u <= 0x9fff) ++cjk;
+			else if (u >= 0x20 && u <= 0x7e)
+			{
+				++ascii;
+				if (ch.isLetter()) ++letters;
+				if (ch.isSpace()) ++spaces;
+			}
+			else if (u >= 0xe000 && u <= 0xf8ff) ++privateUse;
+			else if (!ch.isSpace() && u != 0x3000 && u != 0xff0c && u != 0x3002 && u != 0xff01 && u != 0xff1f) ++bad;
+		}
+
+		int length = text.size();
+		if (!length || privateUse > length / 5 || bad > length / 3) return -1;
+		if (cjk >= 4)
+		{
+			int score = 100 + cjk * 3;
+			if (text.contains(QRegularExpression("[。！？!?]"))) score += 200;
+			if (text.contains(QRegularExpression("[，、；：]"))) score += 50;
+			return score;
+		}
+		if (length >= 20 && ascii > length * 0.85 && letters >= 12 && spaces >= 2) return 50 + letters;
+		return -1;
+	}
+
+	bool LooksLikeUnitySearchResult(const QString& text, bool asianSearch)
+	{
+		int score = UnitySearchScore(text);
+		if (score < 0) return false;
+		return !asianSearch || (score >= 100 && text.contains(QRegularExpression("[。！？!?，、；：]")));
+	}
+
 	std::array<InfoForExtension, 20> GetSentenceInfo(TextThread& thread)
 	{
 		void (*AddText)(int64_t, const wchar_t*) = [](int64_t number, const wchar_t* text)
@@ -146,6 +202,7 @@ namespace
 		{ "text number", thread.handle },
 		{ "process id", thread.tp.processId },
 		{ "hook address", (int64_t)thread.tp.addr },
+		{ "hook module", (int64_t)thread.hp.module },
 		{ "text handle", thread.handle },
 		{ "text name", (int64_t)thread.name.c_str() },
 		{ "add sentence", (int64_t)AddSentence },
@@ -504,7 +561,18 @@ namespace
 		try
 		{
 			Host::FindHooks(processId, sp,
-				[hooks, filter](HookParam hp, std::wstring text) { if (filter.match(S(text)).hasMatch()) *hooks << sanitize(S(HookCode::Generate(hp) + L" => " + text)); });
+				[hooks, filter, processId, asianSearch = asianCheck.isChecked()](HookParam hp, std::wstring text)
+				{
+					QString hookCode = S(HookCode::Generate(hp, processId));
+					QString hookText = sanitize(S(text));
+					bool unityHook = hookCode.contains(":GameAssembly.dll", Qt::CaseInsensitive);
+					if (unityHook)
+					{
+						if (!LooksLikeUnitySearchResult(hookText, asianSearch)) return;
+					}
+					else if (!filter.match(hookText).hasMatch()) return;
+					*hooks << sanitize(hookCode + " => " + hookText);
+				});
 		}
 		catch (std::out_of_range) { return; }
 		ViewThread(0);
@@ -515,6 +583,10 @@ namespace
 			QString saveFileName;
 			QMetaObject::invokeMethod(This, [&]
 			{
+				std::sort(hooks->begin(), hooks->end(), [](const QString& a, const QString& b)
+				{
+					return UnitySearchScore(a.section(" => ", 1)) > UnitySearchScore(b.section(" => ", 1));
+				});
 				auto hookList = new QListView(This);
 				hookList->setWindowFlags(Qt::Window | Qt::WindowCloseButtonHint);
 				hookList->setAttribute(Qt::WA_DeleteOnClose);
