@@ -24,7 +24,7 @@
     hp.split_index = _split_ind; \
     hp.type = _type | MODULE_OFFSET | FUNCTION_OFFSET; \
     hp.length_offset = _len_off; \
-    NewHook(hp, #_fun); \
+    NewHook(hp, #_fun, HOOK_ADDITIONAL); \
   }
 
 #define NEW_MODULE_HOOK(_module, _fun, _data, _data_ind, _split_off, _split_ind, _type, _len_off) \
@@ -40,7 +40,7 @@
 	hp.split_index = _split_ind; \
 	hp.type = _type | MODULE_OFFSET | FUNCTION_OFFSET; \
 	hp.length_offset = _len_off; \
-	NewHook(hp, #_fun); \
+	NewHook(hp, #_fun, HOOK_ADDITIONAL); \
   }
 
 #ifndef _WIN64
@@ -199,10 +199,10 @@ void PcHooks::hookD3DXFunctions(HMODULE d3dxModule)
 			hp.offset = s_arg3;
 			hp.length_offset = s_arg4 / arg_sz;
 			hp.type = USING_STRING;
-			NewHook(hp, "ID3DXFont::DrawTextA");
+			NewHook(hp, "ID3DXFont::DrawTextA", HOOK_ADDITIONAL);
 			hp.address = (*font.vtable)[15];
 			hp.type = USING_STRING | USING_UNICODE;
-			NewHook(hp, "ID3DXFont::DrawTextW");
+			NewHook(hp, "ID3DXFont::DrawTextW", HOOK_ADDITIONAL);
 			return;
 		}
 	}
