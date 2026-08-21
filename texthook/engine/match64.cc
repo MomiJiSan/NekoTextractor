@@ -214,17 +214,45 @@ namespace Engine
 		return false;
 	}
 
+	bool InsertTheLamentingGeeseHook(HMODULE gameAssembly)
+	{
+		constexpr uintptr_t hookRva = 0x5C13D0;
+		const BYTE expected[] =
+		{
+			0x48, 0x89, 0x74, 0x24, 0x10, 0x57, 0x48, 0x83,
+			0xEC, 0x20, 0x48, 0x8B, 0xF9, 0x48, 0x8B, 0xF2,
+			0x48, 0x8B, 0x89, 0x50, 0x01, 0x00, 0x00, 0x48,
+			0x85, 0xC9, 0x0F, 0x84, 0xD3, 0x00, 0x00, 0x00
+		};
+		BYTE* address = (BYTE*)gameAssembly + hookRva;
+		__try
+		{
+			if (memcmp(address, expected, sizeof(expected)) != 0) return false;
+		}
+		__except (EXCEPTION_EXECUTE_HANDLER) { return false; }
+
+		HookParam hp = {};
+		hp.type = USING_STRING | USING_UNICODE | MODULE_OFFSET;
+		hp.address = hookRva;
+		hp.offset = -0x28; // rcx, displayed as -24 in /H code syntax.
+		hp.padding = 0x14;
+		wcscpy_s(hp.module, L"GameAssembly.dll");
+		NewHook(hp, "TheLamentingGeese");
+		return true;
+	}
+
 	bool UnsafeDetermineEngineType()
 	{
 		if (Util::CheckFile(L"PPSSPP*.exe") && FindPPSSPP()) return true;
 
 		for (const wchar_t* moduleName : { (const wchar_t*)NULL, L"node.dll", L"nw.dll" }) if (InsertV8Hook(GetModuleHandleW(moduleName))) return true;
 
-		if (GetModuleHandleW(L"GameAssembly.dll")) // TODO: is there a way to autofind hook?
+		if (HMODULE gameAssembly = GetModuleHandleW(L"GameAssembly.dll")) // TODO: is there a way to autofind hook?
 		{
 			ConsoleOutput("Textractor: Precompiled Unity found (searching for hooks should work)");
 			wcscpy_s(spDefault.boundaryModule, L"GameAssembly.dll");
 			spDefault.padding = 20;
+			InsertTheLamentingGeeseHook(gameAssembly);
 			return true;
 		}
 

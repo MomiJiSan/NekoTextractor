@@ -3,9 +3,16 @@
 #include <io.h>
 #include <fcntl.h>
 #include <iostream>
+#include <string.h>
 
-int main()
+int main(int argc, char* argv[])
 {
+	if (argc == 2 && (_stricmp(argv[1], "--neko-info") == 0 || _stricmp(argv[1], "--version") == 0))
+	{
+		printf("{\"name\":\"NekoTextractor\",\"version\":\"%s\",\"upstream\":\"Textractor\",\"capabilities\":[\"textractor_cli_protocol\",\"engine_auto_hook\",\"unity_il2cpp_preset\",\"the_lamenting_geese_hook\"]}\n", VERSION);
+		fflush(stdout);
+		return 0;
+	}
 	_setmode(_fileno(stdout), _O_U16TEXT);
 	_setmode(_fileno(stdin), _O_U16TEXT);
 	wprintf_s(L"Usage: {'attach'|'detach'|hookcode} -Pprocessid\n");
